@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-50PT977J0Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-50PT977J0Q');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-1032754176872449">
+    <meta name="description" content="Visualizador y rastreador de satélites en tiempo real. Seguí la Estación Espacial (ISS), satélites Starlink y más.">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+
+    <link rel="shortcut icon" href="images/icon-192.png" type="image/png">
+    <link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="images/icon-512.png">
+
+    <meta name="theme-color" content="#0D1117">
+    <title>SatélitesArg - Visualizador Satelital</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1032754176872449"
+     crossorigin="anonymous"></script>
+
+
+</head>
+<body class="antialiased">
+    
+    <div id="toast-container"></div>
+
+    <button id="hamburger-btn" data-lang-key="hamburger" aria-label="Abrir menú" title="Abrir menú">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line class="line line1" x1="4" y1="6" x2="20" y2="6"/>
+            <line class="line line2" x1="4" y1="12" x2="20" y2="12"/>
+            <line class="line line3" x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+    </button>
+    <div id="menu-overlay"></div>
+    <nav id="hamburger-menu">
+        <button id="open-about-btn" class="menu-link" data-lang-key="menuAbout">Sobre nosotros</button>
+        <button id="open-guide-btn" class="menu-link" data-lang-key="menuGuide">Guía de Uso</button>
+        <button id="open-legal-btn" class="menu-link" data-lang-key="menuContact">Contacto y Privacidad</button>
+        <button id="open-settings-btn" class="menu-link" data-lang-key="menuSettings">Ajustes</button>
+    </nav>
+
+    <div id="start-screen" class="screen">
+        <button id="daily-update-pill" class="hidden" data-lang-key="dailyUpdatePill">
+            <span id="daily-update-title">Hoy</span>
+            <div id="daily-update-main-pill">
+                <span id="daily-update-text-pill"></span>
+                <div id="daily-update-icon">
+                    <div id="moon-phase-shadow"></div>
+                </div>
+            </div>
+        </button>
+        <div class="text-center flex flex-col items-center">
+            
+            <svg class="start-logo mb-6" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle class="orbit" cx="50" cy="50" r="35" fill="none"/>
+                <circle class="globe" cx="50" cy="50" r="15"/>
+                <circle class="satellite" cx="50" cy="50" r="4"/>
+            </svg>
+            
+            <h1 class="text-5xl font-bold text-white tracking-tight">SatélitesArg</h1>
+            <p class="text-sm font-medium text-text-secondary uppercase tracking-widest mt-2">Viewer</p>
+            
+            <div class="mt-12 flex flex-col items-center justify-center gap-4">
+                <button id="open-map-btn" class="btn btn-primary w-60" data-lang-key="startOpenMap">
+                    Abrir Mapa
+                </button>
+                <button id="open-known-satellites-btn" class="btn btn-secondary w-60" data-lang-key="startSatellites">
+                    Satélites
+                </button>
+                <button id="open-best-passes-btn" class="btn btn-secondary w-60" data-lang-key="startBestPasses">
+                    Mejores Pasos
+                </button>
+            </div>
+        </div>
+
+        <button id="open-social-btn" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-text-secondary transition-colors duration-200 tracking-wider bg-surface/50 backdrop-blur-sm border border-gray-700 rounded-full px-4 py-1.5 hover:border-secondary hover:text-secondary" data-lang-key="startSocial" >
+            SatelitesArg
+        </button>
+    </div>
+
+    <div id="daily-update-modal" class="modal-overlay hidden">
+        <button id="close-daily-update-modal-btn" class="absolute top-4 left-4 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200 z-10" data-lang-key="backButton" aria-label="Volver" title="Volver">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div id="daily-update-modal-content">
+            
+        </div>
+    </div>
+
+    <div id="info-screen-about" class="screen !p-0 !justify-start info-screen hidden">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <div class="px-6 pt-6 pb-4">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-about-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold" data-lang-key="aboutTitle">Sobre nosotros</h2>
+                </div>
+            </div>
+            <div class="flex-grow min-h-0 overflow-y-auto px-6 info-content">
+                <p data-lang-key="aboutP1">
+                    Esta página nació de una pasión personal por la astronomía, los satélites y todo lo relacionado con el cielo. Siempre me gustó seguir de cerca distintos fenómenos: desde el paso de satélites hasta estrellas fugaces o bólidos, incluso rastrear alguno esperando verlo caer. Más de una vez invité a amigos y conocidos a salir al patio a una hora puntual y mirar hacia arriba, sin contarles qué iban a ver. Después llegaban los mensajes de sorpresa, cuando descubrieron algo que no esperaban, como el paso de satélites Starlink.
+                </p>
+                <p data-lang-key="aboutP2">
+                    De esas experiencias surgió la idea de compartir lo que me apasiona. Primero lo hice en redes sociales, avisando sobre fenómenos o eventos visibles desde Argentina, y con el tiempo se armó una comunidad muy activa.
+                </p>
+                <h3 data-lang-key="aboutH3_1">Nuestra Misión</h3>
+                <p data-lang-key="aboutP3">
+                    En ese camino note una dificultad: no existía una herramienta que fuera realmente clara, intuitiva y completa para rastrear satélites. Algunas páginas eran complicadas, otras ofrecían información muy parcial, y ninguna reunía todo lo que yo necesitaba. Por eso decidí crear esta página. Al principio fue un proyecto personal, pensado para simplificar mi experiencia. Con el tiempo entendí que lo que a mí me resultaba útil también podía serlo para mucha más gente que buscaba algo similar.
+                </p>
+                <p data-lang-key="aboutP4">
+                    Hoy esta plataforma está pensada para cualquier persona interesada en el cielo: desde quienes dan sus primeros pasos hasta los aficionados más avanzados. El objetivo es ofrecer una herramienta simple, práctica y agradable de usar, con la información indispensable pero sin sobrecargar.
+                </p>
+                <p data-lang-key="aboutP5">
+                    Nuestro compromiso es seguir mejorando y sumando funciones, para que cada vez más personas puedan disfrutar de la experiencia de observar y rastrear de una manera accesible y atractiva.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-screen-guide" class="screen hidden !p-0 !justify-start info-screen">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <div class="px-6 pt-6 pb-4">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-guide-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold" data-lang-key="guideTitle">Guía de Uso</h2>
+                </div>
+            </div>
+            <div class="flex-grow min-h-0 overflow-y-auto px-6 info-content">
+                <p data-lang-key="guideP1">¡Bienvenido a la guía de SatélitesArg! Aquí te explicamos las funciones principales para que puedas empezar a explorar el cielo como un experto.</p>
+ 
+                <h3 data-lang-key="guideH3_1">1. Primeros Pasos: Configurar tu Ubicación</h3>
+                <p data-lang-key="guideP2">Para obtener predicciones precisas, lo primero es establecer tu ubicación. Podés hacerlo de dos maneras:</p>
+                <ul>
+                    <li data-lang-key="guideLi1"><strong>En el mapa:</strong> Dentro del mapa, usá el buscador en la parte superior para escribir el nombre de tu ciudad.</li>
+                    <li data-lang-key="guideLi2"><strong>En "Mejores Pasos":</strong> Esta sección también tiene su propio buscador de ubicación.</li>
+                </ul>
+                <p data-lang-key="guideP3">Una vez que la aplicación encuentre tu ciudad, la guardará para futuras visitas. Esto es crucial para calcular cuándo un satélite será visible desde tu posición.</p>
+ 
+                <h3 data-lang-key="guideH3_2">2. Rastreando un Satélite</h3>
+                <p data-lang-key="guideP4">Hay varias formas de seleccionar un satélite para seguirlo:</p>
+                <ul>
+                    <li data-lang-key="guideLi3"><strong>Satélites Populares:</strong> Desde el menú "Satélites", podés elegir objetos icónicos como la ISS o el Hubble.</li>
+                    <li data-lang-key="guideLi4"><strong>Mis Satélites (Favoritos):</strong> Podés guardar tus satélites preferidos para acceder a ellos rápidamente. También podés agregar satélites personalizados pegando sus datos <code>TLE</code>, que podés encontrar en sitios como <a href="https://celestrak.org/" target="_blank">CelesTrak</a>.</li>
+                    <li data-lang-key="guideLi5"><strong>Últimos Starlink:</strong> Una sección dedicada para seguir los lanzamientos más recientes de la constelación Starlink.</li>
+                </ul>
+                <p data-lang-key="guideP5">Una vez seleccionado, hacé clic en "Abrir Mapa" para verlo en tiempo real.</p>
+ 
+                <h3 data-lang-key="guideH3_3">3. Predicción de Pasos Visibles</h3>
+                <p data-lang-key="guideP6">Un "paso visible" ocurre cuando un satélite cruza el cielo sobre vos, y al mismo tiempo, está iluminado por el Sol mientras que en tu ubicación es de noche (generalmente al amanecer o al anochecer). Para predecir estos eventos:</p>
+                <ol>
+                    <li data-lang-key="guideLi6">Seleccioná un satélite y abrilo en el mapa.</li>
+                    <li data-lang-key="guideLi7">Asegurate de tener tu ubicación configurada.</li>
+                    <li data-lang-key="guideLi8">Abrí el panel de control superior y hacé clic en el botón <strong data-lang-key="predictButton">"Predecir"</strong>.</li>
+                    <li data-lang-key="guideLi9">Verás una lista de los próximos pasos visibles, con su horario y elevación máxima (cuanto más alto el número en grados, mejor se verá).</li>
+                </ol>
+ 
+                <h3 data-lang-key="guideH3_4">4. Usando el Radar y la Brújula de Puntería</h3>
+                <p data-lang-key="guideP7">Esta es una de las herramientas más potentes. Cuando un satélite está pasando, te ayuda a encontrarlo en el cielo.</p>
+                <ol>
+                    <li data-lang-key="guideLi10">En el mapa, con un satélite seleccionado, hacé clic en el ícono de la brújula <i class="fa-solid fa-compass"></i> en la esquina inferior derecha.</li>
+                    <li data-lang-key="guideLi11">Se abrirá un menú con un radar. Otorgá los permisos de orientación si tu navegador los solicita.</li>
+                    <li data-lang-key="guideLi12">El radar te mostrará la trayectoria del satélite por el cielo (la línea curva) y su posición actual (el ícono del satélite).</li>
+                    <li data-lang-key="guideLi13">Apuntá tu celular hacia el cielo. El puntero en el centro del radar indica hacia dónde estás mirando. ¡Hacé coincidir el puntero con el ícono del satélite para encontrarlo!</li>
+                </ol>
+ 
+                <h3 data-lang-key="guideH3_5">5. Viajando en el Tiempo</h3>
+                <p data-lang-key="guideP8">El panel de control de tiempo te permite simular el movimiento de los satélites en el pasado o futuro.</p>
+                <ul>
+                    <li data-lang-key="guideLi14">Hacé clic en la hora (ej. "UTC: 14:32:10") en la parte inferior central para abrir el panel.</li>
+                    <li data-lang-key="guideLi15">Podés arrastrar la línea de tiempo, cambiar la fecha y la hora, o usar los botones de avance y retroceso para moverte en el tiempo.</li>
+                    <li data-lang-key="guideLi16">Para volver al tiempo real, simplemente hacé clic en el botón <strong data-lang-key="realTimeButton">"TIEMPO REAL"</strong>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-screen-legal" class="screen hidden !p-0 !justify-start info-screen">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <div class="px-6 pt-6 pb-4">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-legal-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold" data-lang-key="legalTitle">Contacto y Privacidad</h2>
+                </div>
+            </div>
+            <div class="flex-grow min-h-0 overflow-y-auto px-6 info-content">
+                <h3 data-lang-key="legalH3_1">Contacto</h3>
+                <p data-lang-key="legalP1">
+                    Si tenés alguna pregunta, sugerencia o querés reportar un problema, no dudes en escribirnos. Tu feedback es muy importante para mejorar SatelitesArg Viewer.
+                </p>
+                <p>
+                    <strong data-lang-key="legalContactEmailLabel">Email de contacto:</strong> <a href="mailto:satelitesargentina@gmail.com">satelitesargentina@gmail.com</a>
+                </p>
+ 
+                <h3 data-lang-key="legalH3_2">Política de Privacidad</h3>
+                <p><em data-lang-key="legalLastUpdate">Última actualización: 9 de Septiembre de 2025</em></p>
+                <p data-lang-key="legalP2">
+                    La privacidad de nuestros usuarios es fundamental. A continuación, detallamos qué información manejamos y cómo la utilizamos.
+                </p>
+                <ul>
+                    <li data-lang-key="legalLi1"><strong>Información de Ubicación:</strong> Para calcular los pasos de satélites, la aplicación necesita conocer tu ubicación geográfica. Esta información se obtiene únicamente cuando la ingresás manualmente en el campo de búsqueda. Los datos (latitud, longitud y nombre de la ciudad) se guardan exclusivamente en el almacenamiento local (LocalStorage) de tu navegador para tu comodidad. <strong>Nunca se transmite ni se almacena en nuestros servidores.</strong></li>
+                    <li data-lang-key="legalLi2"><strong>Satélites Personalizados (Datos TLE):</strong> Si agregás satélites personalizados, los datos TLE que ingreses también se guardan en el almacenamiento local de tu navegador. Esta información permanece en tu dispositivo.</li>
+                    <li data-lang-key="legalLi3"><strong>Cookies y Almacenamiento Local:</strong> Utilizamos el almacenamiento local del navegador para guardar tus preferencias (ubicación, satélites favoritos, última capa de mapa utilizada) y mejorar tu experiencia. También se utilizan cookies de terceros para servicios como la publicidad, como se detalla a continuación.</li>
+                    <li data-lang-key="legalLiNotifications"><strong>Notificaciones:</strong> Si otorgás tu permiso explícito, la aplicación puede programar notificaciones locales en tu navegador para avisarte sobre próximos pasos de satélites. Esta funcionalidad se gestiona enteramente en tu dispositivo y no transmite ninguna información personal a nuestros servidores. Podés administrar o revocar este permiso en cualquier momento desde la configuración de tu navegador.</li>
+                    <li data-lang-key="legalLiAdsense"><strong>Publicidad:</strong> Esta página muestra anuncios de Google AdSense. Google y sus socios utilizan cookies para mostrar anuncios relevantes basados en las visitas anteriores de un usuario a este u otros sitios web. Podés inhabilitar el uso de la publicidad personalizada visitando la página de <a href="https://www.google.com/settings/ads" target="_blank">Configuración de Anuncios de Google</a>.</li>
+                    <li data-lang-key="legalLi4"><strong>Servicios de Terceros:</strong> SatélitesArg utiliza servicios de terceros para funcionar:
+                        <ul>
+                            <li data-lang-key="legalLi5"><strong>Mapas:</strong> Los mapas base son provistos por MapTiler. El uso de este servicio está sujeto a su política de privacidad.</li>
+                            <li data-lang-key="legalLi6"><strong>Datos Orbitales (TLE):</strong> Los datos de los satélites se obtienen de fuentes públicas y confiables como CelesTrak.</li>
+                            <li data-lang-key="legalLi7"><strong>Geocodificación y Zona Horaria:</strong> Para la búsqueda de ciudades y la obtención de la zona horaria correspondiente, se utilizan los servicios de Nominatim (OpenStreetMap) y TimeAPI.io. Para asegurar la comunicación con algunos de estos servicios, las solicitudes pueden pasar a través de un proxy (CORSProxy.io). El uso de estos servicios está sujeto a sus propias políticas.</li>
+                        </ul>
+                    </li>
+                </ul>
+ 
+                <h3 data-lang-key="legalH3_3">Agradecimientos</h3>
+                <p data-lang-key="legalP3">
+                    Esta herramienta no sería posible sin el trabajo de la comunidad de código abierto y las organizaciones que proveen datos públicos. Agradecemos especialmente a:
+                </p>
+                <ul>
+                    <li data-lang-key="legalLi8">El equipo detrás de <strong>satellite.js</strong> por la increíble librería de cálculo orbital.</li>
+                    <li data-lang-key="legalLi9"><strong>CelesTrak</strong> por mantener una base de datos TLE actualizada y accesible.</li>
+                    <li data-lang-key="legalLi10"><strong>Leaflet.js</strong>, <strong>SunCalc.js</strong> y los proveedores de mapas por las herramientas que dan vida a la visualización.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-screen-settings" class="screen hidden !p-0 !justify-start info-screen">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <div class="px-6 pt-6 pb-4">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-settings-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold" data-lang-key="settingsTitle">Ajustes</h2>
+                </div>
+            </div>
+            <div class="flex-grow min-h-0 overflow-y-auto px-6 info-content">
+                
+                <div id="settings-list" class="space-y-1">
+
+                    <div class="setting-item">
+                        <div class="setting-item-label">
+                            <span data-lang-key="settingsMapMode">Mapa por Defecto</span>
+                        </div>
+                        <div class="setting-item-control">
+                            <div id="setting-map-mode-selector" class="segmented-control">
+                                <button id="setting-map-dark" class="segmented-control-btn" data-value="dark" data-lang-key="mapStyleDark">Oscuro</button>
+                                <button id="setting-map-satellite" class="segmented-control-btn" data-value="satellite" data-lang-key="mapStyleSatellite">Satélite</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-item-label">
+                            <span data-lang-key="settingsLanguage">Idioma</span>
+                        </div>
+                        <div class="setting-item-control">
+                            <div id="language-dropdown" class="dropdown-control">
+                                <button id="language-dropdown-toggle" class="dropdown-toggle-btn">
+                                    <span id="current-language-display">Español</span>
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </button>
+                                <div id="language-dropdown-menu" class="dropdown-menu hidden">
+                                    <button class="dropdown-item" data-lang="es" data-lang-key="langButtonEs">Español</button>
+                                    <button class="dropdown-item" data-lang="en" data-lang-key="langButtonEn">English</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="info-screen-moon" class="screen hidden !p-0 !justify-start info-screen">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <div class="px-6 pt-6 pb-4">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-moon-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="moonScreenTitle">Fases de la Luna</h2>
+                </div>
+            </div>
+            <div id="moon-phase-container" class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6 info-content">
+            </div>
+        </div>
+    </div>
+
+    <div id="known-satellites-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="satellites-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-known-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="satellitesTitle">Satélites</h2>
+                </div>
+                <nav class="satellite-nav">
+                    <button id="open-my-satellites-btn" class="satellite-nav-btn">
+                        <span data-lang-key="mySatellitesButton">Mis Satélites</span>
+                    </button>
+                    <button id="open-latest-starlinks-btn" class="satellite-nav-btn">
+                        <span data-lang-key="latestStarlinksButton">Últimos Starlink</span>
+                    </button>
+                </nav>
+            </header>
+            <div class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+                <div class="flex flex-col my-4">
+
+                    <div class="list-header">
+                        <h3 class="list-title" data-lang-key="popularSatellites">Populares</h3>
+                        <div id="search-container-known" class="search-wrapper">
+                            <button id="search-toggle-btn-known" class="search-toggle-btn" aria-label="Buscar">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                            <input type="text" id="known-satellites-search-input" class="search-input-known" data-lang-key="searchSatellitesPlaceholder" placeholder="Buscar...">
+                        </div>
+                    </div>
+
+                    <div id="known-satellites-list" class="space-y-2">
+                    </div>
+
+                    <div class="list-header mt-8">
+                        <h3 class="list-title" data-lang-key="favoriteSatellites">Favoritos</h3>
+                        <div id="search-container-favorites" class="search-wrapper">
+                            <button id="search-toggle-btn-favorites" class="search-toggle-btn" aria-label="Buscar">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                            <input type="text" id="favorite-satellites-search-input" class="search-input-known" data-lang-key="searchSatellitesPlaceholder" placeholder="Buscar...">
+                        </div>
+                    </div>
+                    <div id="favorite-satellites-list-known-screen" class="space-y-2 mb-8">
+                    </div>
+                    <div id="no-favorites-on-known-screen-msg" class="text-text-secondary mt-2 mb-8 p-8 border-2 border-dashed border-gray-700 rounded-lg hidden text-center">
+                    </div>
+                    <div class="mt-6 text-center">
+                        <button id="open-brightest-satellites-btn" class="btn-pill-link" data-lang-key="viewMoreBrightest">
+                            Ver más satélites brillantes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="brightest-satellites-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <div class="px-6 pt-6 pb-4">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-known-from-brightest-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold" data-lang-key="brightestSatellitesTitle">Satélites Brillantes</h2>
+                </div>
+            </div>
+            <div class="flex-grow min-h-0 overflow-y-auto px-6">
+                
+                <div class="mt-4 mb-6 flex justify-center">
+                    <div class="w-full max-w-sm">
+                        <div class="search-pill">
+                            <i class="fa-solid fa-magnifying-glass search-pill-icon"></i>
+                            <input type="text" id="brightest-satellites-search-input" class="search-pill-input" data-lang-key="searchSatellitesPlaceholder" placeholder="Buscar satélite...">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="brightest-satellites-list" class="space-y-3">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="best-passes-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="passes-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-passes-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                       <i class="fa-solid fa-arrow-left"></i>
+                   </button>
+                   <h2 class="text-xl font-bold" data-lang-key="bestPassesTitle">Mejores Pasos</h2>
+                </div>
+                
+                <div class="mt-6 flex flex-col items-center gap-4">
+                    <div class="w-full max-w-sm mx-auto">
+                        <div class="search-pill">
+                            <i class="fa-solid fa-location-crosshairs search-pill-icon"></i>
+                            <input type="text" id="best-passes-location-input" class="search-pill-input" data-lang-key="locationPlaceholder" placeholder="Buscá tu ciudad...">
+                            <button id="best-passes-location-search-btn" class="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-full" data-lang-key="searchButton" aria-label="Buscar o limpiar ubicación" title="Buscar ubicación">
+                                <i id="best-passes-location-search-icon" class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </div>
+                        <div id="best-passes-location-feedback" class="text-xs text-center mt-1 h-4"></div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-3">
+                        <div id="best-passes-source-filter-container" class="relative flex justify-center">
+                            <div class="filter-dropdown">
+                                <button id="best-passes-source-filter-btn" class="filter-pill-btn">
+                                    <span id="best-passes-source-filter-label" data-lang-key="filterFavorites">Favoritos</span>
+                                    <i class="fa-solid fa-chevron-down ml-2 text-xs filter-chevron"></i>
+                                </button>
+                                <div id="best-passes-source-filter-menu" class="filter-menu hidden">
+                                    <button class="filter-btn active" data-filter="favorites" data-lang-key="filterFavorites">Favoritos</button>
+                                    <button class="filter-btn" data-filter="all" data-lang-key="allSatellites">Todos los Satélites</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="best-passes-filter-container" class="relative flex justify-center">
+                            <div class="filter-dropdown">
+                                <button id="best-passes-filter-btn" class="filter-pill-btn">
+                                    <span id="best-passes-filter-label" data-lang-key="filterAll">Horario</span>
+                                    <i class="fa-solid fa-chevron-down ml-2 text-xs filter-chevron"></i>
+                                </button>
+                                <div id="best-passes-filter-menu" class="filter-menu hidden">
+                                    <button class="filter-btn active" data-filter="all" data-lang-key="filterAllOption">Todos</button>
+                                    <button class="filter-btn" data-filter="dusk" data-lang-key="filterDusk">Anochecer</button>
+                                    <button class="filter-btn" data-filter="dawn" data-lang-key="filterDawn">Amanecer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="best-passes-scroller" class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+                <div id="show-previous-container" class="text-center py-2">
+                    <button id="show-previous-best-passes-btn" class="view-more-link" data-lang-key="showPreviousPasses">
+                        Ver pasos previos
+                    </button>
+                </div>
+                <div id="best-passes-list" class="space-y-2">
+                </div>
+                <div id="view-more-container-best-passes" class="text-center py-4 hidden">
+                    <button id="view-more-btn-best-passes" class="view-more-link" data-lang-key="viewMoreButton">Ver más</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="my-satellites-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="satellites-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-known-from-my-satellites-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="mySatellitesTitle">Mis Satélites</h2>
+                </div>
+            </header>
+            <div class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+                <div class="my-4">
+                    <button id="add-my-satellite-btn" class="btn btn-primary w-full" data-lang-key="addNewSatellite">
+                        Agregar Nuevo Satélite (TLE)
+                    </button>
+                </div>
+                <div id="my-satellites-list" class="space-y-2 mt-6">
+                </div>
+                <p id="no-my-satellites-msg" class="text-text-secondary mt-8 p-8 border-2 border-dashed border-gray-700 rounded-lg hidden text-center" data-lang-key="noMySatellites">
+                    Aún no has guardado ningún satélite.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="latest-starlinks-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="satellites-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-known-from-starlinks-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="latestStarlinksTitle">Últimos Starlink</h2>
+                </div>
+            </header>
+            <div id="latest-starlinks-content" class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="w-full relative hidden">
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+
+        <div id="map-watermark">@SatelitesArg<span class="hidden lg:inline lg:ml-12">@SatelitesArg</span></div>
+        
+        <header id="main-control-panel">
+            <div id="panel-inner-wrapper">
+                <div id="collapsed-header" class="relative">
+                    <div class="flex items-center gap-4">
+                        <button id="back-btn-from-map" class="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver atrás" title="Volver atrás">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <h2 class="font-bold text-lg hidden sm:block" data-lang-key="appName"></h2>
+                    </div>
+                    <div id="satellite-info-header" class="absolute left-16 right-16 top-1/2 -translate-y-1/2 flex items-center justify-between gap-2 font-mono text-sm hidden">
+                        <div id="satellite-name-container" class="header-content-item !static !transform-none !justify-start min-w-0">
+                            <span id="satellite-name-display" class="font-bold text-white truncate" data-lang-key="centerOnSat"></span>
+                        </div>
+                        <button id="nearby-button" class="btn btn-secondary !px-4 !py-1.5 text-sm !rounded-full flex items-center gap-2 flex-shrink-0">Cerca<i class="fa-solid fa-satellite-dish text-xs"></i></button>
+                        <div id="radar-header-text" class="header-content-item !left-1/2 !-translate-x-1/2" data-lang-key="radarHeaderText">
+                            Apunta hacia arriba
+                        </div>
+                    </div>
+                    <button id="toggle-menu-btn" class="h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="toggleMenu" aria-label="Expandir o colapsar menú" title="Expandir/Colapsar Menú">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                </div>
+                
+                <div id="expanded-content">
+                    <div id="panel-pages-container" class="relative w-full overflow-hidden">
+                        <div id="panel-pages-wrapper" class="flex">
+                            <div id="main-panel-page" class="w-full flex-shrink-0 px-4 pb-4">
+                                <div class="flex flex-col items-center gap-4 pt-4">
+                                    <div class="w-full max-w-sm">
+                                        <div class="relative flex items-center">
+                                            <i class="fa-solid fa-location-crosshairs absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+                                            <input type="text" id="location-input" class="input-field pl-9 pr-10" data-lang-key="locationPlaceholder" placeholder="Escribe tu ciudad...">
+                                            <button id="location-search-btn" class="absolute right-0 top-0 h-full w-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors" data-lang-key="searchButton" aria-label="Buscar o limpiar ubicación" title="Buscar ubicación">
+                                                <i id="location-search-icon" class="fa-solid fa-magnifying-glass"></i>
+                                            </button>
+                                        </div>
+                                        <div id="location-feedback" class="text-xs text-center mt-1 h-4"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+                                        <button id="open-favorites-modal-btn" class="btn btn-primary flex items-center justify-center">
+                                            <span data-lang-key="satellitesTitle">Satélites</span>
+                                        </button>
+                                        <button id="predict-passes-btn" class="btn btn-primary flex items-center justify-center whitespace-nowrap" disabled>
+                                             <span data-lang-key="visiblePassesButton">Pasos Visibles</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="compass-panel-page" class="relative w-full flex-shrink-0 px-4 pb-4 flex flex-col items-center justify-center">
+                                <div id="radar-container" class="relative w-full aspect-square max-w-[160px] mx-auto">
+                                    <canvas id="radar-canvas"></canvas>
+                                    <div id="radar-moon-icon" class="hidden">
+                                        <div class="moon-phase-shadow"></div>
+                                    </div>
+                                    <div id="radar-calibration-overlay" class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-full text-center hidden">
+                                        <div>
+                                            <i class="fa-solid fa-spinner fa-spin text-2xl text-white"></i>
+                                            <p class="text-xs font-bold mt-2 uppercase tracking-wider text-white" data-lang-key="calibrating">Calibrando...</p>
+                                        </div>
+                                    </div>
+                                    <div id="radar-pointer" class="absolute w-3 h-3 bg-secondary rounded-full border-2 border-white shadow-lg pointer-events-none hidden" style="transform: translate(-50%, -50%);"></div>
+                                </div>
+                                <button id="calibrate-compass-btn" class="absolute bottom-4 left-4 btn btn-secondary !p-0 h-8 w-8 flex items-center justify-center z-10" data-lang-key="resetRadar" title="Reiniciar Radar">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                </button>
+                                <button id="expand-radar-btn" class="absolute bottom-4 right-4 btn btn-secondary !p-0 h-8 w-8 flex items-center justify-center z-10" data-lang-key="expandRadar" title="Agrandar Radar">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="page-indicator-dots" class="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-2 mb-1">
+                <span class="dot active-dot"></span>
+                <span class="dot"></span>
+            </div>
+            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-1.5 bg-gray-600/75 rounded-full cursor-ns-resize handle" aria-hidden="true"></div>
+        </header>
+        
+        <div id="time-control-panel" class="p-3 md:p-4">
+            <div id="time-control-handle" class="absolute top-[-14px] left-1/2 -translate-x-1/2 w-8 h-1.5 bg-gray-600/75 rounded-full handle hidden" aria-hidden="true"></div>
+            
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-4">
+                        <div class="time-control-title" data-lang-key="simulationControl">Control<br>de Tiempo</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="reset-time-btn" class="btn h-9 px-3 text-xs" data-lang-key="realTimeButton" >
+                            <i class="fa-solid fa-clock-rotate-left mr-2"></i>TIEMPO REAL
+                        </button>
+                        <button id="close-time-control-btn" class="h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="closeTimeControls" aria-label="Cerrar Controles de Tiempo" title="Cerrar Controles de Tiempo">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="w-full py-2">
+                    <input type="range" min="0" max="1439" value="0" class="w-full" id="timeline-slider" data-lang-key="timelineSlider" title="Arrastra para cambiar la hora del día">
+                </div>
+ 
+                                <div class="flex items-center justify-between gap-2 w-full bg-black/20 px-3 py-3 rounded-full">
+                    <label for="date-input" class="relative btn !border-none h-10 flex items-center justify-center gap-2.5 hover:bg-surface/75 transition-colors duration-200 cursor-pointer bg-surface/50 !rounded-full !px-3 !flex-initial">
+                        <span id="date-input-display" class="font-mono text-base text-text-primary">--/--/----</span>
+                        <input type="date" id="date-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" data-lang-key="selectDate" aria-label="Seleccionar fecha">
+                        <input type="time" id="time-input" class="hidden" value="12:00">
+                    </label>
+                    <div class="flex items-center justify-center bg-surface/50 rounded-full px-1">
+                        <button id="time-rewind-btn" class="btn btn-secondary !p-0 h-10 w-10 flex items-center justify-center !border-none !bg-transparent" data-lang-key="rewindTime" title="Retroceder en el tiempo"><i class="fa-solid fa-backward-fast"></i></button>
+                        <button id="time-step-btn" class="btn btn-secondary !border-none !bg-transparent !px-2 font-bold text-base" data-lang-key="timeStep" title="Cambiar unidad de tiempo (Segundos/Minutos/Horas)">MIN</button>
+                        <button id="time-forward-btn" class="btn btn-secondary !p-0 h-10 w-10 flex items-center justify-center !border-none !bg-transparent" data-lang-key="forwardTime" title="Avanzar en el tiempo"><i class="fa-solid fa-forward-fast"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="prediction-date-display" class="absolute z-[450] left-1/2 -translate-x-1/2 text-xs text-text-primary hidden pointer-events-none" style="text-shadow: 0 1px 4px rgba(0,0,0,0.7);"></div>
+        
+        <button id="toggle-time-control-btn" data-lang-key="timeControls" title="Controles de tiempo" aria-label="Mostrar controles de tiempo" class="font-mono flex items-center justify-center gap-2">
+           <span id="utc-time-display">--:--:--</span>
+           <i class="fa-solid fa-chevron-up text-xs"></i>
+        </button>
+
+        <div id="map-style-switcher">
+            <div id="map-style-options">
+                <button class="map-style-btn active" data-layer="dark" data-lang-key="mapStyleDark">Oscuro</button>
+                <button class="map-style-btn" data-layer="satellite" data-lang-key="mapStyleSatellite">Satélite</button>
+            </div>
+            <button id="map-style-toggle-btn" class="btn btn-secondary !p-0 h-11 w-11 flex items-center justify-center" data-lang-key="switchMapStyle" title="Cambiar estilo del mapa">
+                <i class="fa-solid fa-layer-group text-lg"></i>
+            </button>
+        </div>
+        
+        <div id="action-controls">
+            <button id="open-compass-menu-btn" class="btn btn-secondary !p-0 h-11 w-11 flex items-center justify-center" data-lang-key="openCompassMenu" title="Abrir menú de brújula">
+                <i class="fa-solid fa-compass text-lg"></i>
+            </button>
+            <button id="toggle-visibility-bands-btn" class="btn btn-secondary !p-0 h-11 w-11 flex items-center justify-center hidden" data-lang-key="toggleVisibilityBands" title="Mostrar/Ocultar bandas de visibilidad">
+                <i class="fa-solid fa-eye text-lg"></i>
+            </button>
+        </div>
+        
+        <div id="visibility-controls" class="absolute z-[450] bottom-[5.5rem] left-4 flex flex-col items-start gap-2 hidden">
+            <div id="visibility-legend" class="text-xs text-left bg-surface/80 p-2 rounded-md border border-gray-700 backdrop-blur-sm shadow-lg hidden">
+                <div data-lang-key="visOptimal"><i class="fa-solid fa-circle" style="color:rgba(57, 211, 83, 0.25)"></i> Óptima (> 60°)</div>
+                <div data-lang-key="visMedium"><i class="fa-solid fa-circle" style="color:rgba(247, 181, 48, 0.2)"></i> Media (30°-60°)</div>
+                <div data-lang-key="visPeripheral"><i class="fa-solid fa-circle" style="color:rgba(248, 81, 73, 0.15)"></i> Periférica (10°-30°)</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tle-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 data-lang-key="tleModalTitle">Agregar Nuevo Satélite (Formato TLE)</h3>
+            <p class="text-sm text-gray-400 mb-4" data-lang-key="tleModalDesc">
+                Pega aquí los datos TLE del satélite. Puedes encontrarlos en sitios como <a href="https://celestrak.org/" target="_blank" class="text-blue-400 hover:underline">CelesTrak</a>. El nombre se tomará de la primera línea.
+            </p>
+            <textarea id="tle-input" rows="5" class="textarea-field w-full text-sm font-mono" data-lang-key="tleModalPlaceholder" placeholder="MI SATÉLITE PERSONALIZADO&#10;1 51092U 22002AS...&#10;2 51092 53.2173..."></textarea>
+            <div class="flex justify-end gap-4 mt-6">
+                <button id="close-tle-modal-btn" class="btn btn-secondary" data-lang-key="cancelButton">Cancelar</button>
+                <button id="save-tle-btn" class="btn btn-primary" data-lang-key="saveSatelliteButton">Guardar Satélite</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="passes-modal" class="modal-overlay hidden">
+        <div class="modal-content !p-0 !max-h-[80vh] flex flex-col !w-[clamp(320px,95vw,700px)]">
+            <header class="passes-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="close-passes-modal-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                       <i class="fa-solid fa-arrow-left"></i>
+                   </button>
+                   <h2 id="passes-modal-title" class="text-xl font-bold" data-lang-key="passesModalTitle">Próximos Pasos Visibles</h2>
+                </div>
+                
+                <div class="mt-6 flex flex-col items-center gap-4">
+                    <div id="passes-modal-filter-container" class="relative flex justify-center">
+                        <div class="filter-dropdown">
+                            <button id="passes-modal-filter-btn" class="filter-pill-btn">
+                                <span id="passes-modal-filter-label" data-lang-key="filterAll">Horario</span>
+                                <i class="fa-solid fa-chevron-down ml-2 text-xs filter-chevron"></i>
+                            </button>
+                            <div id="passes-modal-filter-menu" class="filter-menu hidden">
+                                <button class="filter-btn active" data-filter="all" data-lang-key="filterAllOption">Todos</button>
+                                <button class="filter-btn" data-filter="dusk" data-lang-key="filterDusk">Anochecer</button>
+                                <button class="filter-btn" data-filter="dawn" data-lang-key="filterDawn">Amanecer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+                <div id="results-container" class="space-y-2">
+                </div>
+                <div id="view-more-container-modal" class="text-center py-4 hidden">
+                    <button id="view-more-btn-modal" class="view-more-link" data-lang-key="viewMoreButton">Ver más</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-modal" class="modal-overlay hidden">
+        <div class="modal-content !max-w-sm">
+            <h3 data-lang-key="notificationModalTitle">Crear Notificación</h3>
+            <p class="text-sm text-text-secondary mb-6" data-lang-key="notificationModalDesc">
+                ¿Cuántos minutos antes del paso querés que te avise?
+            </p>
+            <div id="notification-options" class="flex flex-col gap-3">
+                <button class="btn btn-secondary" data-minutes="5" data-lang-key="notify5min">5 minutos antes</button>
+                <button class="btn btn-secondary" data-minutes="10" data-lang-key="notify10min">10 minutos antes</button>
+                <button class="btn btn-secondary" data-minutes="30" data-lang-key="notify30min">30 minutos antes</button>
+                <button class="btn btn-secondary" data-minutes="60" data-lang-key="notify60min">1 hora antes</button>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <button id="close-notification-modal-btn" class="btn btn-secondary" data-lang-key="cancelButton">Cancelar</button>
+                <button id="done-notification-modal-btn" class="btn btn-primary" data-lang-key="doneButton">Hecho</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 data-lang-key="confirmDeleteTitle">Confirmar Eliminación</h3>
+            <p id="confirm-modal-text" class="text-text-secondary mb-6" data-lang-key="confirmDeleteDesc">
+                ¿Estás seguro de que deseas eliminar este satélite?
+            </p>
+            <div class="flex justify-end gap-4">
+                <button id="cancel-delete-btn" class="btn btn-secondary" data-lang-key="cancelButton">Cancelar</button>
+                <button id="confirm-delete-btn" class="btn btn-danger" data-lang-key="deleteButton">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="favorites-modal" class="modal-overlay hidden">
+        <div class="modal-content !p-0 !max-h-[80vh] flex flex-col">
+            <div class="px-6 pt-6 pb-4">
+                <div class="flex items-center justify-between gap-4">
+                    <button id="close-favorites-modal-btn" class="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl sm:text-2xl font-bold text-center flex-grow" data-lang-key="satellitesTitle">Satélites</h2>
+                    <button id="toggle-multi-select-btn" class="btn btn-secondary !p-0 h-10 w-10 flex-shrink-0 flex items-center justify-center" data-lang-key="multiSelect" title="Activar selección múltiple">
+                        <i class="fa-solid fa-check-double"></i>
+                    </button>
+                </div>
+                <div class="text-center mt-4">
+                    <button id="show-all-satellites-btn" class="btn btn-secondary !px-4 !py-1 text-sm rounded-full" data-lang-key="showAllButton">Mostrar todos</button>
+                </div>
+            </div>
+   
+            <div id="favorites-modal-list" class="flex-grow min-h-0 overflow-y-auto p-6 pt-2 space-y-3">
+            </div>
+   
+            <div id="favorites-modal-footer" class="px-6 py-4 flex justify-between items-center flex-shrink-0">
+                 <span id="multi-select-counter" class="text-sm text-text-secondary" data-lang-key="multiSelectCounter">0 seleccionados</span>
+                 <div class="flex gap-4">
+                     <button id="show-selected-sats-btn" class="btn btn-primary" data-lang-key="viewButton">Ver</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="satellite-info-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="satellite-info-modal-title" data-lang-key="satInfoModalTitle">Información del Satélite</h3>
+            <div id="satellite-info-content" class="space-y-4 text-text-secondary">
+            </div>
+            <div class="flex justify-center mt-6">
+                <button id="close-satellite-info-modal-btn" class="btn btn-primary" data-lang-key="closeButton">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="radar-modal" class="modal-overlay hidden">
+        <div class="modal-content !w-[90vw] !max-w-[800px] !p-4 md:!p-6 flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="!mb-0 !pb-0 !border-none" data-lang-key="radarModalTitle">Radar de Puntería</h3>
+                <button id="close-radar-modal-btn" class="btn btn-secondary !p-2 h-9 w-9 flex-shrink-0 flex items-center justify-center" data-lang-key="closeButton">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="flex-grow relative w-full aspect-square flex items-center justify-center">
+                <canvas id="large-radar-canvas"></canvas>
+                <div id="large-radar-moon-icon" class="hidden">
+                    <div class="moon-phase-shadow"></div>
+                </div>
+                <div id="large-radar-calibration-overlay" class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-full text-center hidden">
+                    <div>
+                        <i class="fa-solid fa-spinner fa-spin text-4xl text-white"></i>
+                        <p class="text-sm font-bold mt-3 uppercase tracking-wider text-white" data-lang-key="calibrating">Calibrando...</p>
+                    </div>
+                </div>
+                <div id="large-radar-pointer" class="absolute w-3 h-3 bg-secondary rounded-full border-2 border-white shadow-lg pointer-events-none hidden" style="transform: translate(-50%, -50%);"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="social-modal" class="modal-overlay hidden">
+        <div class="modal-content relative !w-auto !max-w-[90vw] sm:!max-w-md">
+            <button id="close-social-modal-btn" class="absolute top-4 right-4 text-text-secondary hover:text-white transition-colors z-10" data-lang-key="closeButton" aria-label="Cerrar" title="Cerrar">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+            
+            <div class="text-center">
+                <h3 class="!text-2xl !font-bold !border-none !p-0 !m-0" data-lang-key="socialModalTitle">Seguinos</h3>
+                <p class="text-text-secondary mt-2 max-w-md mx-auto" data-lang-key="socialModalDesc">Para enterarte de noticias y eventos astronómicos.</p>
+            </div>
+ 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                <a href="https://instagram.com/satelitesarg" target="_blank" rel="noopener noreferrer" class="social-card group">
+                    <i class="fa-brands fa-instagram text-3xl mb-3 transition-colors duration-300" style="color: #E4405F;"></i>
+                    <h4 class="font-bold text-text-primary">Instagram</h4>
+                    <p class="text-sm text-text-secondary">@satelitesarg</p>
+                </a>
+                
+                <a href="https://twitter.com/satelitesarg" target="_blank" rel="noopener noreferrer" class="social-card group">
+                    <i class="fa-brands fa-twitter text-3xl mb-3 transition-colors duration-300" style="color: #1DA1F2;"></i>
+                    <h4 class="font-bold text-text-primary">Twitter / X</h4>
+                    <p class="text-sm text-text-secondary">@satelitesarg</p>
+                </a>
+ 
+                <a href="mailto:satelitesargentina@gmail.com" class="social-card group">
+                     <i class="fa-solid fa-envelope text-3xl mb-3 text-gray-400 group-hover:text-secondary transition-colors duration-300"></i>
+                    <h4 class="font-bold text-text-primary" data-lang-key="emailContact">Email</h4>
+                    <p class="text-sm text-text-secondary" data-lang-key="contactLabel">Contacto</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-modal" class="modal-overlay hidden">
+        <div class="modal-content !w-auto !max-w-xs text-center !p-8">
+            <i class="fa-solid fa-spinner fa-spin text-4xl text-secondary"></i>
+            <p id="loading-modal-text" class="font-bold mt-4 text-text-primary" data-lang-key="calculating">Calculando...</p>
+        </div>
+    </div>
+
+    <script>
+      // Se usa la fecha y hora actual para asegurar que el navegador siempre pida la última versión de los archivos.
+      // document.write() garantiza que se carguen y ejecuten en orden antes de continuar con el resto de la página.
+      const version = new Date().getTime();
+      document.write(`<script src="satellites-config.js?v=${version}"><\/script>`);
+      document.write(`<script src="script.js?v=${version}"><\/script>`);
+    </script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registrado con éxito:', registration.scope);
+            })
+            .catch(error => {
+              console.log('Fallo en el registro del ServiceWorker:', error);
+            });
+        });
+      }
+    </script>
+</body>
+</html>
