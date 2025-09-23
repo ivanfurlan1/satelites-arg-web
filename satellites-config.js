@@ -49,10 +49,6 @@ STARLINK-G10-15 SINGLE
         {
             tle: `PEGAR TLE`
         }
-
-        /*
-        /*
-        /*
         /*
     ],
 
