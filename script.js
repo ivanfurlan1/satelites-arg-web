@@ -74,8 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const App = {
 		state: {
 			audioInitialized: false, mapInitialized: false, trackedSatellites: [], observerCoords: null,
-			observerTimeZone: null, geocodeAbortController: null,
-			userLocationMarkers: [], map: null, sounds: {}, realTimeInterval: null, geocodeTimeout: null,
+			observerTimeZone: null, 
+			geocodeControllers: { map: null, bestPasses: null },
+			geocodeTimeouts: { map: null, bestPasses: null },
+			userLocationMarkers: [], map: null, sounds: {}, realTimeInterval: null,
 			currentTime: new Date(), isTimeTraveling: false, isPassViewActive: false, passTrajectoryDrawn: false, timeStepIndex: 1,
 			baseLayers: {}, currentBaseLayer: null, visibilityBands: { layers: [], visible: false, trajectory: [] },
 			allBestPasses: [],
@@ -350,29 +352,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			elements.confirmDeleteBtn.addEventListener('click', (e) => this.mySatellites.confirmDelete(e));
 			
-			const setupLocationInput = (inputElement, searchBtn, searchIcon, recalculatePasses) => {
+			const setupLocationInput = (inputElement, searchBtn, searchIcon, recalculatePasses, type) => {
+				// Función para actualizar el ícono (lupa/cruz) según el contenido del input
+				const updateIconState = () => {
+					const isSuccess = searchIcon.classList.contains('fa-xmark');
+					// Si el usuario borra manualmente el texto de una búsqueda ya hecha,
+					// el ícono debe volver a ser una lupa.
+					if (inputElement.value.trim() === '' && isSuccess) {
+						searchIcon.classList.remove('fa-xmark');
+						searchIcon.classList.add('fa-magnifying-glass');
+						searchBtn.setAttribute('title', App.language.getTranslation('searchLocation'));
+					}
+				};
+			
+				// Ahora, el evento 'input' también llama a la función de búsqueda para activar el debounce.
+				inputElement.addEventListener('input', (event) => {
+					updateIconState();
+					this.location.handleCitySearch(event.target.value, recalculatePasses, type);
+				});
+			
 				searchBtn.addEventListener('click', () => {
 					this.playSound('uiClick', 'C4');
 					if (searchIcon.classList.contains('fa-xmark')) {
+						// Si el ícono es una X, la acción es LIMPIAR
 						inputElement.value = '';
-						this.location.handleCitySearch('', recalculatePasses);
+						this.location.handleCitySearch('', recalculatePasses, type);
+						inputElement.dispatchEvent(new Event('input')); // Se dispara el evento para actualizar el ícono
 						inputElement.focus();
 					} else {
-						this.location.handleCitySearch(inputElement.value, recalculatePasses);
+						// Si es una lupa, la acción es BUSCAR
+						this.location.handleCitySearch(inputElement.value, recalculatePasses, type);
 					}
 				});
-
+			
 				inputElement.addEventListener('keydown', (event) => {
 					if (event.key === 'Enter') {
 						event.preventDefault();
-						clearTimeout(this.state.geocodeTimeout);
-						this.location.handleCitySearch(inputElement.value, recalculatePasses);
+						// Se elimina el clearTimeout de acá porque ahora lo maneja la función principal.
+						this.location.handleCitySearch(inputElement.value, recalculatePasses, type);
 						inputElement.blur();
 					}
 				});
 			};
-			setupLocationInput(elements.locationInput, elements.locationSearchBtn, elements.locationSearchIcon, false);
-			setupLocationInput(elements.bestPassesLocationInput, elements.bestPassesLocationSearchBtn, elements.bestPassesLocationSearchIcon, true);
+			setupLocationInput(elements.locationInput, elements.locationSearchBtn, elements.locationSearchIcon, false, 'map');
+			setupLocationInput(elements.bestPassesLocationInput, elements.bestPassesLocationSearchBtn, elements.bestPassesLocationSearchIcon, true, 'bestPasses');
 
 			elements.openFavoritesModalBtn.addEventListener('click', () => { this.playSound('uiClick', 'D4'); this.navigation.go('known-satellites-screen'); });
 			
@@ -1081,7 +1104,14 @@ document.addEventListener('DOMContentLoaded', () => {
 				const worldBounds = [ [-90, -180], [90, -180], [90, 180], [-90, 180] ];
 				const circleLatLngs = this.getCircleLatLngs(observerCoords, radiusKm);
 				nearby.mask = L.polygon([worldBounds, circleLatLngs], { color: 'transparent', fillColor: '#0D1117', fillOpacity: 0.5, className: 'nearby-mask-overlay' }).addTo(map);
-				map.fitBounds(nearby.circle.getBounds(), { padding: [50, 50] });
+				
+				const panelHeight = App.elements.mainControlPanel.offsetHeight;
+				const topPadding = panelHeight + 20; // Sumamos 20px de margen
+
+				map.fitBounds(nearby.circle.getBounds(), { 
+					paddingTopLeft: [50, topPadding],
+					paddingBottomRight: [50, 50]
+				});
 			},
 		
 			getCircleLatLngs(center, radiusKm) {
@@ -1522,11 +1552,16 @@ document.addEventListener('DOMContentLoaded', () => {
 					history.back();
 				}
 			},
-			showLoadingModal(textKey = 'calculating') {
+			showLoadingModal(textKey = 'calculating', replacements = {}) {
                 const { loadingModal, loadingModalText } = App.elements;
                 if (!loadingModal) return;
                 
-                loadingModalText.textContent = App.language.getTranslation(textKey);
+                let text = App.language.getTranslation(textKey);
+                for (const key in replacements) {
+                    text = text.replace(`{${key}}`, replacements[key]);
+                }
+
+                loadingModalText.textContent = text;
                 loadingModal.classList.remove('hidden');
                 setTimeout(() => loadingModal.classList.add('is-visible'), 10);
             },
@@ -3123,7 +3158,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			clearMapLayers() {
 				const { map } = App.state;
 				if (!map) return;
-				App.time.stopRealTimeUpdates();
 				App.state.trackedSatellites.forEach(sat => {
 					if (sat.markers) sat.markers.forEach(m => { if(map.hasLayer(m)) map.removeLayer(m); });
 					sat.markers = [];
@@ -3179,6 +3213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 						const successText = `${App.language.getTranslation('locationLabel')}: ${name}`;
 						this._updateLocationUI(name, 'success', successText);
 						App.ui.updateButtonsState();
+						App.time.updateClockPill();
 						
 						setTimeout(() => { 
 							App.elements.bestPassesLocationFeedback.classList.remove('is-visible'); 
@@ -3234,98 +3269,112 @@ document.addEventListener('DOMContentLoaded', () => {
 					});
 				}
 			},
-			async handleCitySearch(cityName, shouldRecalculatePasses = false) {
-				// Si hay una búsqueda anterior en curso, la cancelamos.
-				if (App.state.geocodeAbortController) {
-					App.state.geocodeAbortController.abort();
+			async handleCitySearch(cityName, shouldRecalculatePasses = false, type) {
+				if (!type) {
+					console.error("handleCitySearch fue llamado sin un tipo ('map' o 'bestPasses').");
+					return;
 				}
-				// Creamos un nuevo controlador para esta búsqueda.
-				App.state.geocodeAbortController = new AbortController();
-				const { signal } = App.state.geocodeAbortController;
-
-                if (shouldRecalculatePasses) {
-                    sessionStorage.clear(); 
-                    App.state.passCalculation.allFoundPasses = [];
-                }
-                
-				App.state.userLocationMarkers.forEach(m => App.state.map.removeLayer(m));
-				App.state.userLocationMarkers = [];
-
-				App.state.isSpecialOrbitModeActive = false;
-				App.state.nextVisiblePass = null;
-
-				if (cityName.trim().length === 0) { 
-					App.state.observerCoords = null; 
+			
+				// Limpia el timeout anterior para esta barra de búsqueda específica.
+				if (App.state.geocodeTimeouts[type]) {
+					clearTimeout(App.state.geocodeTimeouts[type]);
+				}
+				// Aborta cualquier fetch anterior de la misma barra para evitar condiciones de carrera.
+				if (App.state.geocodeControllers[type]) {
+					App.state.geocodeControllers[type].abort();
+				}
+			
+				// Maneja la limpieza de la ubicación si el input está vacío.
+				if (cityName.trim().length === 0) {
+					App.state.observerCoords = null;
 					App.state.observerTimeZone = null;
 					this._updateLocationUI('', 'clear', '');
-					localStorage.removeItem(App.config.locationStorageKey); 
-					App.time.updateClockPill(); 
+					localStorage.removeItem(App.config.locationStorageKey);
+					App.time.updateClockPill();
 					App.ui.updateButtonsState();
-                    App.ui.showDailyUpdate();
-					if(shouldRecalculatePasses) App.prediction.showBestPasses();
+					App.ui.showDailyUpdate();
+					if (shouldRecalculatePasses) App.prediction.showBestPasses();
 					App.satellites.drawOrbits();
-					return; 
+					return;
 				}
-				
-				this._updateLocationUI(cityName, 'loading', App.language.getTranslation('searching'));
-
-				try {
-					const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&accept-language=es`, { signal }); 
-					const data = await response.json();
-					if (data && data.length > 0) { 
-						const { lat, lon, display_name } = data[0];
-						const simpleName = display_name.split(',')[0]; 
-						App.state.observerCoords = [parseFloat(lat), parseFloat(lon)]; 
+			
+				// Inicia el debounce: espera 300ms después de la última tecla antes de buscar.
+				App.state.geocodeTimeouts[type] = setTimeout(async () => {
+					this._updateLocationUI(cityName, 'loading', App.language.getTranslation('searching'));
+					
+					App.state.geocodeControllers[type] = new AbortController();
+					const { signal } = App.state.geocodeControllers[type];
+			
+					// Timeout manual: si la búsqueda tarda más de 8 segundos, se cancela.
+					const requestTimeout = setTimeout(() => {
+						App.state.geocodeControllers[type].abort();
+					}, 8000);
+			
+					try {
+						const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&accept-language=es`, {
+							signal,
+							headers: { 'User-Agent': 'SatelitesArg/1.0 (satelitesargentina@gmail.com)' } // User-Agent requerido por Nominatim.
+						});
 						
-						try {
-							const tzResponse = await fetch(`https://corsproxy.io/?https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lon}`, { signal });
-							if (tzResponse.ok) {
-								const timezoneData = await tzResponse.json();
-								App.state.observerTimeZone = timezoneData;
-								this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData });
-							} else { throw new Error('Timezone API failed'); }
-						} catch(tzError) {
-							console.error("Could not fetch timezone, will fallback to UTC", tzError);
-							App.state.observerTimeZone = null;
-							this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData: null });
+						clearTimeout(requestTimeout); // Si la respuesta llega a tiempo, cancela el timeout.
+			
+						if (!response.ok) throw new Error(`Error de red: ${response.status}`);
+						
+						const data = await response.json();
+			
+						if (data && data.length > 0) {
+							// --- Procesa la respuesta exitosa (esta lógica es la misma que antes) ---
+							const { lat, lon, display_name } = data[0];
+							const simpleName = display_name.split(',')[0];
+							App.state.observerCoords = [parseFloat(lat), parseFloat(lon)];
+			
+							try {
+								const tzResponse = await fetch(`https://corsproxy.io/?https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lon}`, { signal });
+								if (tzResponse.ok) {
+									const timezoneData = await tzResponse.json();
+									App.state.observerTimeZone = timezoneData;
+									this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData });
+								} else { throw new Error('API de zona horaria falló'); }
+							} catch (tzError) {
+								console.error("No se pudo obtener la zona horaria, se usará UTC como fallback", tzError);
+								App.state.observerTimeZone = null;
+								this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData: null });
+							}
+			
+							App.time.updateTimeUI();
+							this._updateLocationUI(simpleName, 'success', `${App.language.getTranslation('locationLabel')}: ${simpleName}`);
+							setTimeout(() => App.elements.bestPassesLocationFeedback.classList.remove('is-visible'), 2000);
+							App.playSound('success', 'E4');
+							if (App.state.map) {
+								this.applySavedLocationToMap();
+								App.state.map.flyTo(App.state.observerCoords, 5, { duration: 0.8 });
+							}
+							App.time.updateClockPill();
+							if (shouldRecalculatePasses) App.prediction.showBestPasses();
+							App.prediction.findNextVisiblePass();
+							App.time.updateSpecialOrbitMode();
+							App.satellites.drawOrbits();
+							App.ui.showDailyUpdate();
+						} else {
+							this.setError(App.language.getTranslation('cityNotFound'));
 						}
-
-						App.time.updateTimeUI();
-
-						this._updateLocationUI(simpleName, 'success', `${App.language.getTranslation('locationLabel')}: ${simpleName}`);
-						
-						setTimeout(() => {
-							App.elements.bestPassesLocationFeedback.classList.remove('is-visible');
-						}, 2000);
-						
-						App.playSound('success', 'E4'); 
-						if(App.state.map) {
-							this.applySavedLocationToMap();
-							App.state.map.flyTo(App.state.observerCoords, 5, { duration: 0.8 }); 
+					} catch (error) {
+						clearTimeout(requestTimeout); // Asegura que el timeout se limpie también en caso de error.
+						if (error.name !== 'AbortError') {
+							console.error('Error en geocodificación:', error);
+							this.setError(App.language.getTranslation('networkError'));
+							App.ui.showToast(App.language.getTranslation('networkError'), 'error');
+						} else {
+							console.log("Búsqueda abortada (nueva búsqueda, timeout o limpieza manual).");
+							const currentInput = (type === 'map') ? App.elements.locationInput : App.elements.bestPassesLocationInput;
+							if (currentInput.value === cityName) {
+								this.setError(App.language.getTranslation('networkError'));
+							}
 						}
-						
-						App.time.updateClockPill(); 
-						
-						if(shouldRecalculatePasses) {
-							App.prediction.showBestPasses();
-						}
-						
-						App.prediction.findNextVisiblePass();
-						App.time.updateSpecialOrbitMode();
-						App.satellites.drawOrbits();
-                        App.ui.showDailyUpdate();
-
-					} 
-					else { this.setError(App.language.getTranslation('cityNotFound')); }
-				} catch(error) {
-					// Si el error es por cancelación, no hacemos nada. Si es otro error, lo mostramos.
-					if (error.name !== 'AbortError') {
-						this.setError(App.language.getTranslation('networkError'));
-					} else {
-						console.log("Búsqueda de ciudad cancelada.");
+					} finally {
+						App.ui.updateButtonsState();
 					}
-				}
-				App.ui.updateButtonsState();
+				}, 300);
 			},
 			setError(msg) { 
 				App.state.observerCoords = null; 
@@ -3466,7 +3515,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fragment = document.createDocumentFragment();
 
                 if (passesToRender.length === 0 && !append) {
-                    // No mostrar mensaje si estamos agregando y no hay nada, podría haber más después.
+                    resultsContainer.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="noPassesForFilter">${App.language.getTranslation('noPassesForFilter')}</p>`;
                 } else {
                     let lastDay = resultsContainer.lastElementChild?.dataset.day || '';
                     const dayOptions = { month: 'long', day: 'numeric' };
@@ -3590,7 +3639,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 showPreviousBestPassesBtn.textContent = App.language.getTranslation('showPreviousPasses');
                 App.state.previousBestPassesLoaded = false;
                 
-                App.ui.showLoadingModal('calculatingBestPasses');
+                const source = App.state.currentBestPassesSource;
+                let satsToCalculate = [];
+
+                if (source === 'all') {
+                    const allSatsMap = new Map();
+                    const addSatToMap = (sat) => { if (!sat || !sat.tle) return; const tleId = getTleId(sat.tle); if (tleId && !allSatsMap.has(tleId)) { allSatsMap.set(tleId, sat); } };
+                    App.mySatellites.loadFromStorage().forEach(addSatToMap);
+                    Object.values(App.config.knownSatellites).forEach(addSatToMap);
+                    App.config.latestStarlinks.forEach(addSatToMap);
+                    App.config.brightestSatellites.forEach(addSatToMap);
+                    satsToCalculate = Array.from(allSatsMap.values());
+                } else {
+                    satsToCalculate = App.mySatellites.loadFromStorage();
+                }
+                
+                App.ui.showLoadingModal('calculatingBestPasses', { count: satsToCalculate.length });
 
                 if (!App.state.observerCoords) {
                     bestPassesList.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="setLocationForBestPasses">${App.language.getTranslation('setLocationForBestPasses')}</p>`;
@@ -3600,8 +3664,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                // *** MODIFICACIÓN INICIA ***
-                const source = App.state.currentBestPassesSource;
                 const cacheKey = `best_passes_cache_${source}_${App.state.observerCoords[0]}_${App.state.observerCoords[1]}`;
                 try {
                     const cachedDataString = sessionStorage.getItem(cacheKey);
@@ -3623,21 +3685,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {
                     console.error("Error al leer la caché de pasos:", e);
                     sessionStorage.removeItem(cacheKey);
-                }
-                // *** MODIFICACIÓN TERMINA ***
-
-                let satsToCalculate = [];
-
-                if (source === 'all') {
-                    const allSatsMap = new Map();
-                    const addSatToMap = (sat) => { if (!sat || !sat.tle) return; const tleId = getTleId(sat.tle); if (tleId && !allSatsMap.has(tleId)) { allSatsMap.set(tleId, sat); } };
-                    App.mySatellites.loadFromStorage().forEach(addSatToMap);
-                    Object.values(App.config.knownSatellites).forEach(addSatToMap);
-                    App.config.latestStarlinks.forEach(addSatToMap);
-                    App.config.brightestSatellites.forEach(addSatToMap);
-                    satsToCalculate = Array.from(allSatsMap.values());
-                } else {
-                    satsToCalculate = App.mySatellites.loadFromStorage();
                 }
 
                 if (satsToCalculate.length === 0) {
@@ -4436,7 +4483,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			},
 			updateClockPill() {
 				const { utcTimeDisplay } = App.elements;
-				if(!utcTimeDisplay) return;
+				if (!utcTimeDisplay) return;
+			
+				if (!App.state.observerCoords) {
+					utcTimeDisplay.textContent = '--:--:--';
+					return;
+				}
+			
 				const localTime = this.formatCityTime(App.state.currentTime, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 				utcTimeDisplay.textContent = `${localTime}`;
 			},
@@ -4569,28 +4622,28 @@ document.addEventListener('DOMContentLoaded', () => {
 			},
 
 			stopTimeTravel() {
-				if(App.state.isTimeTraveling) {
+				if (App.state.isTimeTraveling) {
 					App.state.isTimeTraveling = false;
 					App.state.isPassViewActive = false;
 					App.state.passTrajectoryDrawn = false;
 					App.elements.toggleTimeControlBtn.classList.remove('time-traveling-active');
-					this.updateResetTimeButtonState(); // Update button state
+					this.updateResetTimeButtonState();
 					App.prediction.clearVisibilityBands();
 					App.elements.predictionDateDisplay.classList.add('hidden');
-					App.elements.timeControlHandle.classList.add('hidden');
 				}
 				App.state.currentTime = new Date();
 				this.updateTimeUI();
-				
-				const previouslySelectedSat = App.state.selectedSatForOrbit;
-		
-				App.satellites.handleTracking();
-		
-				if (previouslySelectedSat) {
-					App.state.selectedSatForOrbit = previouslySelectedSat;
-					const satIndex = App.state.trackedSatellites.findIndex(s => s.tle === previouslySelectedSat.tle);
-					if (satIndex !== -1) {
-						App.satellites.drawSingleOrbit(satIndex);
+				this.startRealTimeUpdates();
+			
+				if (!App.state.isNearbyModeActive) {
+					const previouslySelectedSat = App.state.selectedSatForOrbit;
+					App.satellites.handleTracking();
+					if (previouslySelectedSat) {
+						App.state.selectedSatForOrbit = previouslySelectedSat;
+						const satIndex = App.state.trackedSatellites.findIndex(s => s.tle === previouslySelectedSat.tle);
+						if (satIndex !== -1) {
+							App.satellites.drawSingleOrbit(satIndex);
+						}
 					}
 				}
 			},

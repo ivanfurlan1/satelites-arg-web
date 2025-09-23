@@ -500,10 +500,19 @@ body {
 /* --- FIN: Comportamiento del botón "Cerca" --- */
 
 /* --- INICIO: Estilos para el modo "Cerca" --- */
+#nearby-button {
+    transition: all 0.3s var(--ease-out-quint);
+    box-shadow: inset 0 0 8px 0 rgba(88, 166, 255, 0.4);
+}
+
+#nearby-button:hover {
+    box-shadow: inset 0 0 14px 2px rgba(88, 166, 255, 0.6);
+}
+
 #nearby-button.active {
     background-color: var(--color-accent);
     color: white;
-    box-shadow: 0 0 15px 0 rgba(88, 166, 255, 0.5);
+    box-shadow: inset 0 0 14px 2px rgba(88, 166, 255, 0.7), 0 0 15px 0 rgba(88, 166, 255, 0.5);
 }
 
 .nearby-radius-circle {
@@ -2055,6 +2064,26 @@ label[for="date-input"] {
 #show-previous-container {
     transition: transform 0.3s var(--ease-out-quint), opacity 0.3s var(--ease-out-quint);
     will-change: transform, opacity;
+}
+
+.view-more-link {
+    color: var(--color-secondary);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+.view-more-link:hover:not(:disabled) {
+    color: var(--color-primary);
+    text-shadow: 0 0 8px var(--color-primary);
+}
+.view-more-link:disabled {
+    color: var(--color-text-secondary);
+    cursor: not-allowed;
 }
 /* --- FIN: Estilos para el botón de "Ver Pasos Previos" --- */
 
