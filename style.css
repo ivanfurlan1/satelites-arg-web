@@ -1721,6 +1721,35 @@ body.time-controls-active #action-controls {
     padding: 1.25rem 0 0.5rem 0;
 }
 
+/* ========================================================================== 
+   ESTILOS PARA EL MODAL DE INFORMACIÓN DE SATÉLITE
+   ========================================================================== */
+#satellite-info-modal .modal-content {
+    background-color: var(--color-background);
+    padding: 1.5rem;
+}
+
+#satellite-info-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-text-primary);
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 1.5rem;
+}
+
+#satellite-info-modal #satellite-info-content {
+    border-top: 1px solid #30363d;
+    border-bottom: 1px solid #30363d;
+    padding: 1.5rem 0;
+}
+
+#satellite-info-modal .btn-secondary {
+    width: 100%;
+    max-width: 200px;
+}
+
 /* Media query para teléfonos un poco más grandes, para que el título no quede tan chico */
 @media (min-width: 480px) {
     #passes-modal-title {

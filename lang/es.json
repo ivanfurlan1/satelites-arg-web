@@ -132,6 +132,8 @@
   "multiSelectCounterPlural": "{count} seleccionados",
   "viewButton": "Ver",
   "satInfoModalTitle": "Información del Satélite",
+  "magnitude": "Magnitud",
+  "magnitudePlaceholder": "--",
   "closeButton": "Cerrar",
   "doneButton": "Hecho",
   "radarModalTitle": "Radar de Puntería",
