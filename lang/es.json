@@ -133,6 +133,7 @@
   "viewButton": "Ver",
   "satInfoModalTitle": "Información del Satélite",
   "magnitude": "Magnitud",
+  "magnitudeMax": "Magnitud Máxima",
   "magnitudePlaceholder": "--",
   "closeButton": "Cerrar",
   "doneButton": "Hecho",

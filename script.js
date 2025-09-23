@@ -149,21 +149,27 @@ const satcatManager = {
 
     getStandardMagnitude(noradId) {
         if (!this.isInitialized || !this.satcat.has(noradId)) {
-            return 5.0; // Magnitud por defecto si no se encuentra
+            return 5.0; // Magnitud por defecto si no se encuentra el satélite.
         }
         const satData = this.satcat.get(noradId);
-        const rcs = satData.RCS_SIZE; // Puede ser 'SMALL', 'MEDIUM', 'LARGE' o un número
 
+        // Prioridad 1: Usar la magnitud estándar proveída por CelesTrak si existe.
+        if (typeof satData.MAG === 'number') {
+            return satData.MAG;
+        }
+
+        // Prioridad 2 (Fallback): Estimar la magnitud a partir del RCS si no hay MAG.
+        const rcs = satData.RCS_SIZE;
         let rcsValue = 1.0; // Default a MEDIUM
+
         if (typeof rcs === 'number') {
             rcsValue = rcs;
         } else if (typeof rcs === 'string') {
             if (rcs === 'SMALL') rcsValue = 0.1;
             else if (rcs === 'LARGE') rcsValue = 10.0;
         }
-
-        // Fórmula simplificada para estimar la magnitud estándar desde el RCS
-        // M₀ = -1.5 - 2.5 * log10(RCS)
+        
+        // Fórmula simplificada para estimar la magnitud estándar desde el RCS.
         // Se asegura que rcsValue no sea cero o negativo para evitar errores de logaritmo.
         return -1.5 - 2.5 * Math.log10(Math.max(0.001, rcsValue));
     }
@@ -3337,29 +3343,29 @@ document.addEventListener('DOMContentLoaded', () => {
 								<p class="font-mono text-xl text-secondary mt-1">${speed.toFixed(2)} km/s</p>
 							</div>
 							<div>
-								<p class="font-bold text-sm text-text-secondary uppercase tracking-wider" data-lang-key="magnitude">${App.language.getTranslation('magnitude')}</p>
-								<p id="magnitude-value" class="font-mono text-xl text-text-secondary mt-1"><i class="fa-solid fa-spinner fa-spin"></i></p>
+								<p class="font-bold text-sm text-text-secondary uppercase tracking-wider" data-lang-key="magnitudeMax">${App.language.getTranslation('magnitudeMax')}</p>
+								<p id="max-magnitude-value" class="font-mono text-xl text-text-secondary mt-1"><i class="fa-solid fa-spinner fa-spin"></i></p>
 							</div>
 						</div>`;
                     
-                    // Si estamos en "modo cerca", calculamos y mostramos la magnitud.
                     if (App.state.isNearbyModeActive && App.state.observerCoords) {
-                        this.calculateMagnitude(sat, App.state.observerCoords, App.state.currentTime)
-                            .then(mag => {
-                                const magElement = document.getElementById('magnitude-value');
-                                if (magElement) {
-                                    if (mag !== null && isFinite(mag)) {
-                                        magElement.textContent = mag.toFixed(1);
-                                        magElement.classList.remove('text-text-secondary');
-                                        magElement.classList.add('text-warning');
-                                    } else {
-                                        magElement.textContent = '--';
-                                    }
-                                }
-                            });
+						this.calculateMaxMagnitudeForPass(sat, App.state.observerCoords)
+							.then(maxMag => {
+								const maxMagElement = document.getElementById('max-magnitude-value');
+								if (maxMagElement) {
+									if (maxMag !== null && isFinite(maxMag)) {
+										maxMagElement.textContent = maxMag.toFixed(1);
+										maxMagElement.classList.remove('text-text-secondary');
+										maxMagElement.classList.add('text-warning');
+									} else {
+										maxMagElement.textContent = '--';
+									}
+								}
+							});
+
                     } else {
-                        const magElement = document.getElementById('magnitude-value');
-                        if (magElement) magElement.textContent = '--';
+                        const maxMagElement = document.getElementById('max-magnitude-value');
+						if (maxMagElement) maxMagElement.textContent = '--';
                     }
 
 				} catch(e) { App.elements.satelliteInfoContent.innerHTML = `<p class="text-danger">${App.language.getTranslation('satInfoError')}</p>`; console.error("Error calculating satellite info:", e); }
@@ -3373,19 +3379,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     const noradId = satcatManager._parseNoradFromTle(sat.tle);
                     if (!noradId) return null;
 
-                    // 1. Obtener magnitud estándar (M₀)
+                    // 1. Obtener magnitud estándar (M₀) usando el método mejorado.
                     const M0 = satcatManager.getStandardMagnitude(noradId);
 
-                    // 2. Obtener posición del satélite y del sol
+                    // 2. Obtener posición del satélite y del sol.
                     const posVel = satellite.propagate(sat.satrec, time);
                     const satEci = posVel.position;
                     const sunEci = getSunEci(time);
 
-                    // 3. Verificar si el satélite está iluminado
+                    // 3. Verificar si el satélite está iluminado.
                     const isSatInSunlight = App.prediction.isSatIlluminated(satEci, time);
-                    if (!isSatInSunlight) return null; // No es visible si no está iluminado
+                    if (!isSatInSunlight) return null;
 
-                    // 4. Obtener vector del observador
+                    // 4. Obtener vector y posición del observador.
                     const gmst = satellite.gstime(time);
                     const observerGd = {
                         latitude: satellite.degreesToRadians(observerCoords[0]),
@@ -3395,33 +3401,72 @@ document.addEventListener('DOMContentLoaded', () => {
                     const observerEcf = satellite.geodeticToEcf(observerGd);
                     const observerEci = satellite.ecfToEci(observerEcf, gmst);
                     
-                    // 5. Calcular vectores para el ángulo de fase
+                    // 5. Calcular vectores para el ángulo de fase.
                     const vec_sat_sun = { x: sunEci.x - satEci.x, y: sunEci.y - satEci.y, z: sunEci.z - satEci.z };
                     const vec_sat_obs = { x: observerEci.x - satEci.x, y: observerEci.y - satEci.y, z: observerEci.z - satEci.z };
 
-                    // 6. Calcular distancia (range) al observador
+                    // 6. Calcular distancia (range) al observador.
                     const range = Math.sqrt(vec_sat_obs.x**2 + vec_sat_obs.y**2 + vec_sat_obs.z**2);
 
-                    // 7. Calcular ángulo de fase (phi)
+                    // 7. Calcular ángulo de fase (phi).
                     const dotProduct = (vec_sat_sun.x * vec_sat_obs.x) + (vec_sat_sun.y * vec_sat_obs.y) + (vec_sat_sun.z * vec_sat_obs.z);
                     const mag_sat_sun = Math.sqrt(vec_sat_sun.x**2 + vec_sat_sun.y**2 + vec_sat_sun.z**2);
                     const mag_sat_obs = range;
-                    const phi = Math.acos(dotProduct / (mag_sat_sun * mag_sat_obs)); // en radianes
+                    const phi = Math.acos(dotProduct / (mag_sat_sun * mag_sat_obs));
 
-                    // 8. Calcular función de fase para una esfera difusa
+                    // 8. Calcular función de fase (modelo de esfera difusa).
                     const phaseFunction = (1 / Math.PI) * (Math.sin(phi) + (Math.PI - phi) * Math.cos(phi));
-                    if (phaseFunction <= 0) return null; // Evitar logaritmos de cero o negativos
+                    if (phaseFunction <= 0) return null;
 
-                    // 9. Fórmula final de magnitud aparente
+                    // 9. Fórmula de magnitud aparente (sin correcciones aún).
                     const magnitude = M0 + 5 * Math.log10(range / 1000) - 2.5 * Math.log10(phaseFunction);
+                    
+                    // --- NUEVO: Corrección por Extinción Atmosférica ---
+                    const posEcf = satellite.eciToEcf(satEci, gmst);
+                    const lookAngles = satellite.ecfToLookAngles(observerGd, posEcf);
+                    const elevationRad = lookAngles.elevation;
 
-                    return magnitude;
-
+                    if (elevationRad > 0) {
+                        const k = 0.2; // Coeficiente de extinción atmosférica (valor promedio).
+                        const airmass = 1 / Math.sin(elevationRad);
+                        const extinction = k * airmass;
+                        return magnitude + extinction;
+                    }
+                    
+                    // Si el satélite está por debajo del horizonte, no es visible.
+                    return null;
+                    
                 } catch (e) {
-                    console.error("Error en el cálculo de magnitud para " + sat.name, e);
+                    // Se mantiene el manejo de errores, pero ya no se loguea para cada satélite.
+                    // console.error("Error en el cálculo de magnitud para " + sat.name, e);
                     return null;
                 }
-            }
+            },
+
+            async calculateMaxMagnitudeForPass(sat, coords) {
+                if (!sat.satrec || !coords) return null;
+            
+                const passes = App.prediction.calculateVisiblePasses(sat, coords, { days: 1 });
+                const now = App.state.currentTime;
+            
+                const relevantPass = passes.find(p => now >= p.start && now <= p.end) || passes.find(p => p.start > now);
+            
+                if (!relevantPass) {
+                    return null;
+                }
+            
+                let minMagnitude = Infinity;
+                const step = 20000; // Calcular cada 20 segundos
+            
+                for (let time = relevantPass.start.getTime(); time <= relevantPass.end.getTime(); time += step) {
+                    const currentMagnitude = await this.calculateMagnitude(sat, coords, new Date(time));
+                    if (currentMagnitude !== null && currentMagnitude < minMagnitude) {
+                        minMagnitude = currentMagnitude;
+                    }
+                }
+            
+                return isFinite(minMagnitude) ? minMagnitude : null;
+            },
 		},
 		location: {
 			saveToStorage(loc) { try { localStorage.setItem(App.config.locationStorageKey, JSON.stringify(loc)); } catch (e) { console.error(e); } },
