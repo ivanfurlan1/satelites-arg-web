@@ -29,6 +29,10 @@ const SATELLITES_CONFIG = {
         }
     },
 
+
+
+
+
     // Lista de los últimos Starlinks (actualizar manualmente cuando sea necesario)
     latestStarlinks: [
         {
@@ -46,6 +50,11 @@ const SATELLITES_CONFIG = {
         {
             tle: `PEGAR TLE`
         }
+
+        /*
+        /*
+        /*
+
         */
     ],
 
