@@ -494,10 +494,9 @@ document.addEventListener('DOMContentLoaded', () => {
 					}
 				};
 			
-				// Ahora, el evento 'input' también llama a la función de búsqueda para activar el debounce.
-				inputElement.addEventListener('input', (event) => {
+				// Ahora, el evento 'input' solo actualiza el estado del ícono.
+				inputElement.addEventListener('input', () => {
 					updateIconState();
-					this.location.handleCitySearch(event.target.value, recalculatePasses, type);
 				});
 			
 				searchBtn.addEventListener('click', () => {
@@ -3542,10 +3541,6 @@ document.addEventListener('DOMContentLoaded', () => {
 					return;
 				}
 			
-				// Limpia el timeout anterior para esta barra de búsqueda específica.
-				if (App.state.geocodeTimeouts[type]) {
-					clearTimeout(App.state.geocodeTimeouts[type]);
-				}
 				// Aborta cualquier fetch anterior de la misma barra para evitar condiciones de carrera.
 				if (App.state.geocodeControllers[type]) {
 					App.state.geocodeControllers[type].abort();
@@ -3565,83 +3560,80 @@ document.addEventListener('DOMContentLoaded', () => {
 					return;
 				}
 			
-				// Inicia el debounce: espera 300ms después de la última tecla antes de buscar.
-				App.state.geocodeTimeouts[type] = setTimeout(async () => {
-					this._updateLocationUI(cityName, 'loading', App.language.getTranslation('searching'));
+				this._updateLocationUI(cityName, 'loading', App.language.getTranslation('searching'));
+				
+				App.state.geocodeControllers[type] = new AbortController();
+				const { signal } = App.state.geocodeControllers[type];
+		
+				// Timeout manual: si la búsqueda tarda más de 8 segundos, se cancela.
+				const requestTimeout = setTimeout(() => {
+					App.state.geocodeControllers[type].abort();
+				}, 8000);
+		
+				try {
+					const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&accept-language=es`, {
+						signal,
+						headers: { 'User-Agent': 'SatelitesArg/1.0 (satelitesargentina@gmail.com)' } // User-Agent requerido por Nominatim.
+					});
 					
-					App.state.geocodeControllers[type] = new AbortController();
-					const { signal } = App.state.geocodeControllers[type];
-			
-					// Timeout manual: si la búsqueda tarda más de 8 segundos, se cancela.
-					const requestTimeout = setTimeout(() => {
-						App.state.geocodeControllers[type].abort();
-					}, 8000);
-			
-					try {
-						const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&accept-language=es`, {
-							signal,
-							headers: { 'User-Agent': 'SatelitesArg/1.0 (satelitesargentina@gmail.com)' } // User-Agent requerido por Nominatim.
-						});
-						
-						clearTimeout(requestTimeout); // Si la respuesta llega a tiempo, cancela el timeout.
-			
-						if (!response.ok) throw new Error(`Error de red: ${response.status}`);
-						
-						const data = await response.json();
-			
-						if (data && data.length > 0) {
-							// --- Procesa la respuesta exitosa (esta lógica es la misma que antes) ---
-							const { lat, lon, display_name } = data[0];
-							const simpleName = display_name.split(',')[0];
-							App.state.observerCoords = [parseFloat(lat), parseFloat(lon)];
-			
-							try {
-								const tzResponse = await fetch(`https://corsproxy.io/?https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lon}`, { signal });
-								if (tzResponse.ok) {
-									const timezoneData = await tzResponse.json();
-									App.state.observerTimeZone = timezoneData;
-									this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData });
-								} else { throw new Error('API de zona horaria falló'); }
-							} catch (tzError) {
-								console.error("No se pudo obtener la zona horaria, se usará UTC como fallback", tzError);
-								App.state.observerTimeZone = null;
-								this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData: null });
-							}
-			
-							App.time.updateTimeUI();
-							this._updateLocationUI(simpleName, 'success', `${App.language.getTranslation('locationLabel')}: ${simpleName}`);
-							setTimeout(() => App.elements.bestPassesLocationFeedback.classList.remove('is-visible'), 2000);
-							App.playSound('success', 'E4');
-							if (App.state.map) {
-								this.applySavedLocationToMap();
-								App.state.map.flyTo(App.state.observerCoords, 5, { duration: 0.8 });
-							}
-							App.time.updateClockPill();
-							if (shouldRecalculatePasses) App.prediction.showBestPasses();
-							App.prediction.findNextVisiblePass();
-							App.time.updateSpecialOrbitMode();
-							App.satellites.drawOrbits();
-							App.ui.showDailyUpdate();
-						} else {
-							this.setError(App.language.getTranslation('cityNotFound'));
+					clearTimeout(requestTimeout); // Si la respuesta llega a tiempo, cancela el timeout.
+		
+					if (!response.ok) throw new Error(`Error de red: ${response.status}`);
+					
+					const data = await response.json();
+		
+					if (data && data.length > 0) {
+						// --- Procesa la respuesta exitosa (esta lógica es la misma que antes) ---
+						const { lat, lon, display_name } = data[0];
+						const simpleName = display_name.split(',')[0];
+						App.state.observerCoords = [parseFloat(lat), parseFloat(lon)];
+		
+						try {
+							const tzResponse = await fetch(`https://corsproxy.io/?https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lon}`, { signal });
+							if (tzResponse.ok) {
+								const timezoneData = await tzResponse.json();
+								App.state.observerTimeZone = timezoneData;
+								this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData });
+							} else { throw new Error('API de zona horaria falló'); }
+						} catch (tzError) {
+							console.error("No se pudo obtener la zona horaria, se usará UTC como fallback", tzError);
+							App.state.observerTimeZone = null;
+							this.saveToStorage({ lat: parseFloat(lat), lon: parseFloat(lon), name: simpleName, timezoneData: null });
 						}
-					} catch (error) {
-						clearTimeout(requestTimeout); // Asegura que el timeout se limpie también en caso de error.
-						if (error.name !== 'AbortError') {
-							console.error('Error en geocodificación:', error);
-							this.setError(App.language.getTranslation('networkError'));
-							App.ui.showToast(App.language.getTranslation('networkError'), 'error');
-						} else {
-							console.log("Búsqueda abortada (nueva búsqueda, timeout o limpieza manual).");
-							const currentInput = (type === 'map') ? App.elements.locationInput : App.elements.bestPassesLocationInput;
-							if (currentInput.value === cityName) {
-								this.setError(App.language.getTranslation('networkError'));
-							}
+		
+						App.time.updateTimeUI();
+						this._updateLocationUI(simpleName, 'success', `${App.language.getTranslation('locationLabel')}: ${simpleName}`);
+						setTimeout(() => App.elements.bestPassesLocationFeedback.classList.remove('is-visible'), 2000);
+						App.playSound('success', 'E4');
+						if (App.state.map) {
+							this.applySavedLocationToMap();
+							App.state.map.flyTo(App.state.observerCoords, 5, { duration: 0.8 });
 						}
-					} finally {
-						App.ui.updateButtonsState();
+						App.time.updateClockPill();
+						if (shouldRecalculatePasses) App.prediction.showBestPasses();
+						App.prediction.findNextVisiblePass();
+						App.time.updateSpecialOrbitMode();
+						App.satellites.drawOrbits();
+						App.ui.showDailyUpdate();
+					} else {
+						this.setError(App.language.getTranslation('cityNotFound'));
 					}
-				}, 300);
+				} catch (error) {
+					clearTimeout(requestTimeout); // Asegura que el timeout se limpie también en caso de error.
+					if (error.name !== 'AbortError') {
+						console.error('Error en geocodificación:', error);
+						this.setError(App.language.getTranslation('networkError'));
+						App.ui.showToast(App.language.getTranslation('networkError'), 'error');
+					} else {
+						console.log("Búsqueda abortada (nueva búsqueda, timeout o limpieza manual).");
+						const currentInput = (type === 'map') ? App.elements.locationInput : App.elements.bestPassesLocationInput;
+						if (currentInput.value === cityName) {
+							this.setError(App.language.getTranslation('networkError'));
+						}
+					}
+				} finally {
+					App.ui.updateButtonsState();
+				}
 			},
 			setError(msg) { 
 				App.state.observerCoords = null; 
