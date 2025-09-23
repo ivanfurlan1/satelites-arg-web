@@ -418,6 +418,28 @@ body {
     0%, 100% { transform: scale(1); box-shadow: 0 0 10px var(--color-secondary); }
     50% { transform: scale(0.9); box-shadow: 0 0 15px var(--color-secondary); }
 }
+
+@keyframes pulse-active-mode {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.manual-location-prompt {
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.manual-location-prompt:hover {
+    color: var(--color-secondary);
+    transform: scale(1.05);
+}
+
+.manual-location-active {
+    color: var(--color-warning);
+    animation: pulse-active-mode 1.5s infinite;
+    cursor: default;
+}
 .satellite-label {
     background-color: rgba(13, 17, 23, 0.8); color: var(--color-text-primary);
     border: 1px solid var(--color-orbit); border-radius: 6px; padding: 3px 8px; font-size: 12px;
@@ -609,7 +631,7 @@ body {
 }
 #main-control-panel.expanded #panel-inner-wrapper { max-height: 500px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 
-#collapsed-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; cursor: ns-resize; height: 58px; }
+#collapsed-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; cursor: ns-resize; height: 58px; }
 #expanded-content { opacity: 0; transition: opacity 0.4s var(--ease-out-quint) 0.1s; pointer-events: none; }
 #main-control-panel.expanded #expanded-content { opacity: 1; pointer-events: auto; }
 #toggle-menu-btn .fa-chevron-down { transition: transform 0.4s var(--ease-out-quint); }
@@ -1064,17 +1086,10 @@ label[for="date-input"], label[for="time-input"] {
 }
 
 #best-passes-location-feedback {
-    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, margin-top 0.3s ease-in-out;
-    max-height: 0;
-    opacity: 0;
-    margin-top: 0;
-    overflow: hidden;
-    will-change: max-height, opacity, margin-top;
-}
-#best-passes-location-feedback.is-visible {
-    max-height: 2rem;
+    height: 1rem; /* h-4 */
+    margin-top: 0.25rem; /* mt-1 */
     opacity: 1;
-    margin-top: 0.25rem;
+    overflow: visible;
 }
 
 .info-screen .overflow-y-auto,
@@ -1371,6 +1386,7 @@ body.time-controls-active #action-controls {
 
 #passes-modal .modal-content {
     background-color: var(--color-background);
+    height: 80vh; /* Se establece una altura fija */
 }
 
 #passes-modal .passes-header {

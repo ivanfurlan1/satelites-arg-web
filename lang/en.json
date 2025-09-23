@@ -210,5 +210,9 @@
   "moonPhaseWaningCrescent": "Waning Crescent",
   "moonRise": "Rise",
   "moonSet": "Set",
-  "today": "Today"
+  "today": "Today",
+  "addLocationManually": "Add location manually",
+  "manualLocationActive": "Click on the map to select...",
+  "manualLocationInstructions": "Click anywhere on the map to set your location.",
+  "manualLocationName": "Manual Location"
 }

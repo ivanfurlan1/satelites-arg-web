@@ -211,5 +211,9 @@
   "moonPhaseWaningCrescent": "Creciente Menguante",
   "moonRise": "Sale",
   "moonSet": "Pone",
-  "today": "Hoy"
+  "today": "Hoy",
+  "addLocationManually": "Añadir ubicación manualmente",
+  "manualLocationActive": "Haz clic en el mapa para seleccionar...",
+  "manualLocationInstructions": "Haz clic para fijar tu ubicación en el mapa.",
+  "manualLocationName": "Ubicación Manual"
 }

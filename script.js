@@ -223,7 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderTarget: null, // 'bestPasses' o 'modal'
                 allFoundPasses: []
             },
-            viewConeLayer: null
+            viewConeLayer: null,
+			isManualLocationMode: false
 		},
 		config: {
 			timeSteps: [ { unit: 'seconds', label: 'SEG', value: 1000 }, { unit: 'minutes', label: 'MIN', value: 60000 }, { unit: 'hours', label: 'HS', value: 3600000 }, ],
@@ -344,6 +345,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			// --- INICIO: Limpiar trayectoria con clic en el mapa ---
 			this.state.map.on('click', (e) => {
+				// Si está en modo de selección manual, no hace nada más aquí.
+				// La lógica se maneja en el listener específico que se añade y quita dinámicamente.
+				if (App.state.isManualLocationMode) {
+					return;
+				}
+
 				const isMarkerClick = e.originalEvent.target.closest('.leaflet-marker-icon');
 				const isControlClick = e.originalEvent.target.closest('.leaflet-control');
 		
@@ -2721,7 +2728,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					
 					passCard.onclick = (e) => {
 						const target = e.currentTarget;
-						App.prediction.jumpToPassTime(target.dataset.timestamp, target.dataset.tle);
+						App.prediction.handleBestPassClick(target);
 					};
 					container.appendChild(passCard);
 				});
@@ -3480,11 +3487,9 @@ document.addEventListener('DOMContentLoaded', () => {
 						this._updateLocationUI(name, 'success', successText);
 						App.ui.updateButtonsState();
 						App.time.updateClockPill();
-						
-						setTimeout(() => { 
-							App.elements.bestPassesLocationFeedback.classList.remove('is-visible'); 
-						}, 2000);
-					} 
+					} else {
+						this._updateLocationUI('', 'clear', '');
+					}
 				} catch (e) { console.error(e); } 
 			},
 			_updateLocationUI(name, status, feedbackText) {
@@ -3496,14 +3501,38 @@ document.addEventListener('DOMContentLoaded', () => {
 				const isError = status === 'error';
 				const isLoading = status === 'loading';
 				const isSuccess = status === 'success';
+				const isClear = status === 'clear' || !feedbackText;
 
-				locationFeedback.textContent = feedbackText;
-				locationFeedback.className = `text-xs text-center mt-1 h-4 ${isSuccess ? 'text-green-400' : isError ? 'text-red-400' : 'text-blue-400'}`;
+				let currentFeedbackText = feedbackText;
+				let feedbackClass = '';
+
+				const feedbackElements = [locationFeedback, bestPassesLocationFeedback];
+
+				if (isClear) {
+					currentFeedbackText = App.language.getTranslation('addLocationManually');
+					feedbackClass = 'text-text-secondary manual-location-prompt';
+					feedbackElements.forEach(el => {
+						if(el) el.onclick = App.location.enterManualMode;
+					});
+				} else {
+					feedbackElements.forEach(el => {
+						if(el) el.onclick = null;
+					});
+					if (isSuccess) {
+						feedbackClass = 'text-green-400';
+					} else if (isError) {
+						feedbackClass = 'text-red-400';
+					} else if (isLoading) {
+						feedbackClass = 'text-blue-400';
+					}
+				}
+
+				locationFeedback.textContent = currentFeedbackText;
+				locationFeedback.className = `text-xs text-center mt-1 h-4 ${feedbackClass}`;
 				
-				bestPassesLocationFeedback.textContent = feedbackText;
-				bestPassesLocationFeedback.className = `text-xs text-center ${isSuccess ? 'text-green-400' : isError ? 'text-red-400' : 'text-blue-400'}`;
-				bestPassesLocationFeedback.classList.toggle('is-visible', isLoading || isSuccess || isError);
-
+				bestPassesLocationFeedback.textContent = currentFeedbackText;
+				bestPassesLocationFeedback.className = `text-xs text-center ${feedbackClass}`;
+				
 				const icons = [locationSearchIcon, bestPassesLocationSearchIcon];
 				const buttons = [locationSearchBtn, bestPassesLocationSearchBtn];
 				
@@ -3641,7 +3670,98 @@ document.addEventListener('DOMContentLoaded', () => {
 				this._updateLocationUI(App.elements.locationInput.value, 'error', msg);
 				App.playSound('error', 'C3'); 
 			},
-			clear() { App.state.userLocationMarkers.forEach(m => App.state.map.removeLayer(m)); App.state.userLocationMarkers = []; App.elements.locationInput.value = ''; App.elements.locationFeedback.textContent = ''; App.state.observerCoords = null; App.state.observerTimeZone = null; localStorage.removeItem(App.config.locationStorageKey); App.time.updateClockPill(); }
+			clear() { App.state.userLocationMarkers.forEach(m => App.state.map.removeLayer(m)); App.state.userLocationMarkers = []; App.elements.locationInput.value = ''; App.elements.locationFeedback.textContent = ''; App.state.observerCoords = null; App.state.observerTimeZone = null; localStorage.removeItem(App.config.locationStorageKey); App.time.updateClockPill(); },
+			
+			enterManualMode() {
+				if (App.state.isManualLocationMode || !App.state.map) return;
+				App.playSound('uiClick', 'A3');
+				App.state.isManualLocationMode = true;
+
+				const feedbackElements = [App.elements.locationFeedback, App.elements.bestPassesLocationFeedback];
+				feedbackElements.forEach(el => {
+					if (el) {
+						el.textContent = App.language.getTranslation('manualLocationActive');
+						el.className = el.className.replace('manual-location-prompt', 'manual-location-active');
+						el.onclick = null; // Quita el listener para evitar re-activar
+					}
+				});
+				
+				App.state.map.getContainer().style.cursor = 'crosshair';
+				// Usamos .bind(this) para mantener el contexto de App.location dentro del handler
+				App.state.map.on('click', App.location.handleManualMapClick, App.location);
+				App.ui.showToast(App.language.getTranslation('manualLocationInstructions'), 'success');
+			},
+
+			exitManualMode() {
+				if (!App.state.isManualLocationMode) return;
+				App.state.isManualLocationMode = false;
+				if (App.state.map) {
+					App.state.map.getContainer().style.cursor = '';
+					App.state.map.off('click', App.location.handleManualMapClick, App.location);
+				}
+				// Restaura el estado visual de los inputs de ubicación
+				App.location.loadFromStorage();
+			},
+			
+			handleManualMapClick(e) {
+				const { lat, lng } = e.latlng;
+				this.setManualLocation(lat, lng);
+			},
+
+			async setManualLocation(lat, lon) {
+				if (!App.state.isManualLocationMode) return;
+				
+				App.playSound('success', 'E4');
+				App.ui.showLoadingModal('searching');
+				App.state.map.off('click', this.handleManualMapClick, this);
+
+
+				try {
+					// Reverse geocoding para obtener un nombre
+					const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&accept-language=es`, {
+						headers: { 'User-Agent': 'SatelitesArg/1.0 (satelitesargentina@gmail.com)' }
+					});
+					if (!response.ok) throw new Error('Reverse geocoding failed');
+					const data = await response.json();
+					const address = data.address;
+					const simpleName = address.city || address.town || address.village || data.display_name.split(',')[0] || App.language.getTranslation('manualLocationName');
+
+					// Obtener zona horaria
+					App.state.observerCoords = [lat, lon];
+					try {
+						const tzResponse = await fetch(`https://corsproxy.io/?https://timeapi.io/api/TimeZone/coordinate?latitude=${lat}&longitude=${lon}`);
+						if (tzResponse.ok) {
+							const timezoneData = await tzResponse.json();
+							App.state.observerTimeZone = timezoneData;
+							this.saveToStorage({ lat, lon, name: simpleName, timezoneData });
+						} else { throw new Error('Timezone API failed'); }
+					} catch (tzError) {
+						console.warn("Could not get timezone, falling back to UTC", tzError);
+						App.state.observerTimeZone = null;
+						this.saveToStorage({ lat, lon, name: simpleName, timezoneData: null });
+					}
+					
+					// Actualizar toda la UI
+					this._updateLocationUI(simpleName, 'success', `${App.language.getTranslation('locationLabel')}: ${simpleName}`);
+					this.applySavedLocationToMap();
+					App.ui.updateButtonsState();
+					App.time.updateClockPill();
+					App.prediction.findNextVisiblePass();
+					App.time.updateSpecialOrbitMode();
+					App.satellites.drawOrbits();
+					App.ui.showDailyUpdate();
+
+				} catch (error) {
+					console.error("Error setting manual location:", error);
+					App.ui.showToast(App.language.getTranslation('networkError'), 'error');
+					App.state.observerCoords = null; // Limpia si falla
+				} finally {
+					App.state.isManualLocationMode = false;
+					if (App.state.map) App.state.map.getContainer().style.cursor = '';
+					App.ui.hideLoadingModal();
+					this.exitManualMode();
+				}
+			}
 		},
 		prediction: {
 			_isObserverInDarkness(time, coords) {
@@ -3774,7 +3894,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fragment = document.createDocumentFragment();
 
                 if (passesToRender.length === 0 && !append) {
-                    resultsContainer.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="noPassesForFilter">${App.language.getTranslation('noPassesForFilter')}</p>`;
+                    // Se envuelve el mensaje en un div con flexbox para centrarlo verticalmente en el contenedor de altura fija
+                    resultsContainer.innerHTML = `
+                        <div class="flex items-center justify-center h-full">
+                            <p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="noPassesForFilter">${App.language.getTranslation('noPassesForFilter')}</p>
+                        </div>`;
                 } else {
                     let lastDay = resultsContainer.lastElementChild?.dataset.day || '';
                     const dayOptions = { month: 'long', day: 'numeric' };
@@ -4147,15 +4271,19 @@ document.addEventListener('DOMContentLoaded', () => {
             
                 if (viewMoreBtn && viewMoreBtn.disabled) return; 
 
+                // Cambia el texto del botón "Ver más" a "Calculando..." en lugar de mostrar el modal grande
                 if (viewMoreBtn) {
                     viewMoreBtn.disabled = true;
                     viewMoreBtn.textContent = App.language.getTranslation('calculating');
                 }
-                App.ui.showLoadingModal();
             
+                // El cálculo se envuelve en un setTimeout para no bloquear la UI
                 setTimeout(async () => {
                     if (passCalculation.controller.signal.aborted) {
-                        App.ui.hideLoadingModal();
+                        if (viewMoreBtn) {
+                            viewMoreBtn.disabled = false;
+                            viewMoreBtn.textContent = App.language.getTranslation('viewMoreButton');
+                        }
                         return;
                     }
 
@@ -4184,7 +4312,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     if (passCalculation.controller.signal.aborted) {
-                        App.ui.hideLoadingModal();
                         return;
                     }
                 
@@ -4203,6 +4330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         passCalculation.inProgress = false;
                     }
 
+                    // La función de renderizado se encarga de ocultar el modal principal la primera vez
                     if (passCalculation.renderTarget === 'bestPasses') {
                         this.renderFilteredPasses();
                     } else {
@@ -4210,12 +4338,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 
                     this.updateViewMoreButton();
-                    App.ui.hideLoadingModal();
                 
-                    if (!passCalculation.firstPassFound && passCalculation.inProgress) {
-                        setTimeout(() => this.calculateNextPassBatch(), 50);
-                    }
-                }, 0);
+                    // Se elimina la llamada recursiva automática para que el usuario controle la carga con el botón
+                }, 50); // Un pequeño delay para que la UI se actualice
             },
             
             updateViewMoreButton() {
