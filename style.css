@@ -423,7 +423,24 @@ body {
     border: 1px solid var(--color-orbit); border-radius: 6px; padding: 3px 8px; font-size: 12px;
     font-weight: 500; white-space: nowrap; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     transition: color 0.5s ease-in-out, border-color 0.5s ease-in-out, opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     cursor: pointer;
+}
+
+.satellite-label > span {
+    /* El cursor ahora está en la etiqueta principal, no es necesario aquí */
+}
+
+.satellite-label .sat-info-icon {
+    color: var(--color-text-secondary);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.satellite-label:hover .sat-info-icon {
+    color: var(--color-secondary);
+    transform: scale(1.1);
 }
 
 .satellite-label.is-not-visible {

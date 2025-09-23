@@ -255,6 +255,29 @@ document.addEventListener('DOMContentLoaded', () => {
 			const { elements } = this;
 
 			elements.openMapBtn.addEventListener('click', () => this.openMapAndTrackDefault());
+
+			// *** Manejador de clics para las etiquetas de satélite en el mapa (usando delegación de eventos) ***
+			elements.appContainer.addEventListener('click', (e) => {
+				const label = e.target.closest('.satellite-label');
+				
+				if (label) {
+					e.stopPropagation(); // Evita que el clic llegue al mapa
+					const childWithId = label.querySelector('[data-tle-id]');
+					if (childWithId && childWithId.dataset.tleId) {
+						const tleId = childWithId.dataset.tleId;
+						
+						// Determina en qué lista de satélites buscar según el modo actual
+						const satelliteList = App.state.isNearbyModeActive ? App.state.nearby.satellites : App.state.trackedSatellites;
+						const sat = satelliteList.find(s => getTleId(s.tle) === tleId);
+						
+						if (sat) {
+							// La acción principal para la etiqueta es mostrar información.
+							this.satellites.showInfoModal(sat);
+						}
+					}
+					return;
+				}
+			});
 			
 			elements.openKnownSatellitesBtn.addEventListener('click', () => { this.playSound('uiClick', 'D4'); this.navigation.go('known-satellites-screen'); });
 			
@@ -1235,7 +1258,11 @@ document.addEventListener('DOMContentLoaded', () => {
 							const icon = L.divIcon({ className: '', html: `<div class="satellite-marker-wrapper${visibilityClass}"><svg width="22" height="22" viewBox="0 0 24 24" class="satellite-triangle-icon"><polygon points="12,2 20,22 4,22" stroke="rgba(255,255,255,0.8)" stroke-width="1.5" /></svg></div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
 							const marker = L.marker([lat, lon], { icon }).addTo(map);
 							const tooltipClassName = `satellite-label ${!isVisible ? 'is-not-visible' : ''}`;
-							marker.bindTooltip(sat.name, { permanent: true, direction: 'right', offset: [15, 0], className: tooltipClassName });
+							
+							// Se modifica el contenido del tooltip para que sea idéntico al del modo normal
+							marker.bindTooltip(`<span class="sat-name-span" data-tle-id='${getTleId(sat.tle)}'>${sat.name}</span><i class="fa-solid fa-circle-info sat-info-icon" data-tle-id='${getTleId(sat.tle)}'></i>`, { permanent: true, direction: 'right', offset: [15, 0], className: tooltipClassName, interactive: true });
+							
+							// El clic en el marcador (triángulo) sigue trazando la órbita en el modo Cerca
 							marker.on('click', () => { App.playSound('uiClick', 'E4'); this.drawOrbitForNearbySat(sat); });
 							nearby.satellites.push({ ...sat, marker, lastBearing: 0, orbitLayers: [] });
 						}
@@ -1381,17 +1408,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		navigation: {
 			init() {
 				window.addEventListener('popstate', (event) => {
-					const isMapScreenVisible = App.elements.appContainer && !App.elements.appContainer.classList.contains('hidden');
-					
-					if (isMapScreenVisible && App.state.isNearbyModeActive) {
-						App.nearbyMode.stop();
-						history.pushState({ screen: 'app-container' }, '', '#app-container');
-						return;
-					}
-
 					const modals = [App.elements.tleModal, App.elements.passesModal, App.elements.confirmModal, App.elements.favoritesModal, App.elements.satelliteInfoModal, App.elements.radarModal, App.elements.socialModal, App.elements.notificationModal];
 					const visibleModal = modals.find(m => m && m.classList.contains('is-visible'));
 
+					// Primero, se verifica si hay un modal abierto. Si es así, se cierra.
+					// Esta es la acción principal para "history.back()" cuando un modal está activo.
 					if (visibleModal) {
 						if (visibleModal.id === 'radar-modal') {
 							App.radar.stop();
@@ -1406,7 +1427,20 @@ document.addEventListener('DOMContentLoaded', () => {
 							App.mySatellites.toggleMultiSelectMode(false);
 						}
 						App.ui.hideModal(visibleModal, true);
-					} else if (event.state && event.state.screen) {
+						return; // Importante: termina la ejecución para no procesar otras lógicas de navegación.
+					}
+
+					const isMapScreenVisible = App.elements.appContainer && !App.elements.appContainer.classList.contains('hidden');
+					
+					// Si no hay modales abiertos y se está en modo "Cerca", entonces sí se sale de ese modo.
+					if (isMapScreenVisible && App.state.isNearbyModeActive) {
+						App.nearbyMode.stop();
+						history.pushState({ screen: 'app-container' }, '', '#app-container');
+						return;
+					}
+					
+					// Lógica de navegación entre pantallas si no hay modales ni modos especiales activos.
+					if (event.state && event.state.screen) {
 						this.renderScreen(event.state.screen, false);
 					} else {
 						this.renderScreen('start-screen', false);
@@ -2869,23 +2903,14 @@ document.addEventListener('DOMContentLoaded', () => {
 					offsets.forEach(offset => {
 						const marker = L.marker([initialPos.lat, initialPos.lon + offset], { icon: icon })
 							.addTo(App.state.map)
-							.bindTooltip(sat.name, { permanent: true, direction: 'right', offset: [15, 0], className: 'satellite-label' });
+							.bindTooltip(`<span class="sat-name-span" data-tle-id='${getTleId(sat.tle)}'>${sat.name}</span><i class="fa-solid fa-circle-info sat-info-icon" data-tle-id='${getTleId(sat.tle)}'></i>`, { permanent: true, direction: 'right', offset: [15, 0], className: 'satellite-label', interactive: true });
 						
+						// El manejador de clics ahora está centralizado en setupEventListeners para mayor robustez.
+
 						if (App.state.isAllSatellitesMode) {
 							marker.on('click', () => {
 								App.playSound('uiClick', 'E4');
 								this.drawOrbitOnClick(sat);
-							});
-
-							marker.on('tooltipopen', () => {
-								const tooltipEl = marker.getTooltip().getElement();
-								if (tooltipEl && !tooltipEl.classList.contains('click-handler-added')) {
-									tooltipEl.classList.add('click-handler-added');
-									tooltipEl.addEventListener('click', () => {
-										App.playSound('uiClick', 'E4');
-										this.drawOrbitOnClick(sat);
-									});
-								}
 							});
 						}
 						
@@ -3189,8 +3214,13 @@ document.addEventListener('DOMContentLoaded', () => {
 					sliderContainer.title = App.language.getTranslation('timelineSlider');
 				}
 			},
-			showInfoModal() {
-				if (App.state.trackedSatellites.length === 0) return; const sat = App.state.trackedSatellites[0];
+			showInfoModal(sat) {
+				// Si no se pasa un satélite específico, intenta usar el primero en la lista (comportamiento anterior).
+				if (!sat) {
+					if (App.state.trackedSatellites.length === 0) return;
+					sat = App.state.trackedSatellites[0];
+				}
+				
 				App.playSound('uiClick', 'E4');
 				try {
 					const posVel = satellite.propagate(sat.satrec, new Date(App.state.currentTime)); const gmst = satellite.gstime(new Date(App.state.currentTime)); const posGd = satellite.eciToGeodetic(posVel.position, gmst);
