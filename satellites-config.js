@@ -32,9 +32,12 @@ const SATELLITES_CONFIG = {
     // Lista de los últimos Starlinks (actualizar manualmente cuando sea necesario)
     latestStarlinks: [
         {
-            tle: `SARLINK-G10-15 STACK   
+            tle: `STARLINK-G10-15 STACK   
 1 72000C 25216A   25268.40285278  .00008750  00000+0  15682-4 0    02
-2 72000  53.1632  30.4388 0006755 288.3786 346.5622 16.00923935    19`
+2 72000  53.1632  30.4388 0006755 288.3786 346.5622 16.00923935    19
+STARLINK-G10-15 SINGLE  
+1 72001C 25216B   25268.40285278  .00857960  00000+0  15129-2 0    02
+2 72001  53.1631  30.4388 0006902 289.7240 345.2165 16.00920207    10`
         },
 
         /*
@@ -47,10 +50,10 @@ const SATELLITES_CONFIG = {
             tle: `PEGAR TLE`
         }
 
-        */
-        */
-        */
-        */
+        /*
+        /*
+        /*
+        /*
     ],
 
     // Esta lista se cargará dinámicamente desde CelesTrak
