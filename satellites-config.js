@@ -32,7 +32,7 @@ const SATELLITES_CONFIG = {
     // Lista de los últimos Starlinks (actualizar manualmente cuando sea necesario)
     latestStarlinks: [
         {
-            tle: `STARLINK-G10-15 STACK   
+            tle: `SARLINK-G10-15 STACK   
 1 72000C 25216A   25268.40285278  .00008750  00000+0  15682-4 0    02
 2 72000  53.1632  30.4388 0006755 288.3786 346.5622 16.00923935    19`
         },
