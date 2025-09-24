@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.time.updateResetTimeButtonState(); // Initialize button state
 		},
 		cacheDOMElements() {
-			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'show-previous-best-passes-btn', 'show-previous-container', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings' ];
+			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'show-previous-best-passes-btn', 'show-previous-container', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu' ];
 			ids.forEach(id => { const camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase()); this.elements[camelCaseId] = document.getElementById(id); });
 			if (this.elements.pageIndicatorDots) {
 				this.elements.pageIndicatorDots.dots = this.elements.pageIndicatorDots.querySelectorAll('.dot');
@@ -1117,25 +1117,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ui.showDailyUpdateModal(false);
             });
 
+			elements.closeDailyUpdateModalBtn.addEventListener('click', () => {
+                this.playSound('uiClick', 'A3');
+                this.ui.showDailyUpdateModal(false);
+            });
+
+            elements.backToStartFromEventsBtn.addEventListener('click', () => { this.playSound('uiClick', 'A3'); history.back(); });
+
 			// --- INICIO: Lógica para la barra de navegación inferior ---
-			const navItems = elements.bottomNavBar.querySelectorAll('.nav-item');
-			if (navItems.length === 3) {
-				// Botón 0: Inicio
-				navItems[0].addEventListener('click', () => {
-					this.playSound('uiClick', 'C4');
-					this.navigation.go('start-screen');
-				});
-				// Botón 1: Luna
-				navItems[1].addEventListener('click', () => {
-					this.playSound('uiClick', 'D4');
-					this.navigation.go('info-screen-moon', { hideBackButton: true });
-				});
-				// Botón 2: Menú
-				navItems[2].addEventListener('click', () => {
-					this.playSound('uiClick', 'E4');
-					this.navigation.go('menu-screen', { hideBackButton: true });
-				});
-			}
+			elements.navBtnHome.addEventListener('click', () => {
+                this.playSound('uiClick', 'C4');
+                this.navigation.go('start-screen');
+            });
+            elements.navBtnEvents.addEventListener('click', () => {
+                this.playSound('uiClick', 'C#4');
+                this.navigation.go('events-screen', { hideBackButton: true });
+            });
+            elements.navBtnMoon.addEventListener('click', () => {
+                this.playSound('uiClick', 'D4');
+                this.navigation.go('info-screen-moon', { hideBackButton: true });
+            });
+            elements.navBtnMenu.addEventListener('click', () => {
+                this.playSound('uiClick', 'E4');
+                this.navigation.go('menu-screen', { hideBackButton: true });
+            });
 			// --- FIN: Lógica para la barra de navegación inferior ---
 		},
 		openMapAndTrackDefault() {
@@ -1594,7 +1599,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			},
 			renderScreen(screenId, animate = true) {
-				const screens = [ App.elements.startScreen, App.elements.knownSatellitesScreen, App.elements.appContainer, App.elements.mySatellitesScreen, App.elements.bestPassesScreen, App.elements.brightestSatellitesScreen, App.elements.infoScreenAbout, App.elements.infoScreenGuide, App.elements.infoScreenLegal, App.elements.infoScreenSettings, App.elements.latestStarlinksScreen, App.elements.infoScreenMoon, App.elements.menuScreen ];
+				const screens = [ App.elements.startScreen, App.elements.knownSatellitesScreen, App.elements.appContainer, App.elements.mySatellitesScreen, App.elements.bestPassesScreen, App.elements.brightestSatellitesScreen, App.elements.infoScreenAbout, App.elements.infoScreenGuide, App.elements.infoScreenLegal, App.elements.infoScreenSettings, App.elements.latestStarlinksScreen, App.elements.infoScreenMoon, App.elements.menuScreen, App.elements.eventsScreen ];
 				const currentVisibleScreen = screens.find(s => s && !s.classList.contains('hidden'));
 				const targetScreen = document.getElementById(screenId); 
 				if (!targetScreen) return;
@@ -1602,13 +1607,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Lógica para mostrar/ocultar botones de retroceso según el origen de la navegación
                 const stateOptions = history.state || {};
-                const { backToStartFromMoonBtn, backToStartFromMenuBtn } = App.elements;
+                const { backToStartFromMoonBtn, backToStartFromMenuBtn, backToStartFromEventsBtn } = App.elements;
 
                 if (screenId === 'info-screen-moon' && backToStartFromMoonBtn) {
                     backToStartFromMoonBtn.classList.toggle('hidden', !!stateOptions.hideBackButton);
                 }
                 if (screenId === 'menu-screen' && backToStartFromMenuBtn) {
                     backToStartFromMenuBtn.classList.toggle('hidden', !!stateOptions.hideBackButton);
+                }
+                if (screenId === 'events-screen' && backToStartFromEventsBtn) {
+                    backToStartFromEventsBtn.classList.toggle('hidden', !!stateOptions.hideBackButton);
                 }
 
                 App.prediction.stopPassCalculation();
@@ -1688,11 +1696,13 @@ document.addEventListener('DOMContentLoaded', () => {
 					const menuScreens = ['info-screen-about', 'info-screen-guide', 'info-screen-legal', 'info-screen-settings', 'known-satellites-screen', 'my-satellites-screen', 'latest-starlinks-screen', 'brightest-satellites-screen', 'best-passes-screen', 'menu-screen'];
 
 					if (screenId === 'start-screen') {
-						navItems[0].classList.add('active');
-					} else if (screenId === 'info-screen-moon') {
-						navItems[1].classList.add('active');
+						App.elements.navBtnHome.classList.add('active');
+					} else if (screenId === 'events-screen') {
+                        App.elements.navBtnEvents.classList.add('active');
+                    } else if (screenId === 'info-screen-moon') {
+						App.elements.navBtnMoon.classList.add('active');
 					} else if (menuScreens.includes(screenId)) {
-						navItems[2].classList.add('active');
+						App.elements.navBtnMenu.classList.add('active');
 					}
 					// --- FIN: Actualizar estado de la barra de navegación inferior ---
 				};

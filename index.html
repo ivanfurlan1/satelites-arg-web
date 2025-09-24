@@ -86,6 +86,26 @@
         </button>
     </div>
 
+    <div id="events-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="satellites-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-events-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="navEvents">Eventos</h2>
+                </div>
+            </header>
+            <div class="flex-grow flex items-center justify-center text-center px-4">
+                <div>
+                    <i class="fa-solid fa-rocket text-5xl text-secondary mb-4"></i>
+                    <h3 class="text-2xl font-bold" data-lang-key="comingSoonTitle">Próximamente</h3>
+                    <p class="text-text-secondary mt-2" data-lang-key="comingSoonDesc">Estamos trabajando en esta sección.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="start-screen" class="screen">
         <button id="daily-update-pill" class="hidden" data-lang-key="dailyUpdatePill">
             <span id="daily-update-title">Hoy</span>
@@ -104,17 +124,17 @@
                 <circle class="satellite" cx="50" cy="50" r="4"/>
             </svg>
             
-            <h1 class="text-5xl font-bold text-white tracking-tight">SatélitesArg</h1>
+            <h1 class="text-4xl font-bold text-white tracking-tight">SatélitesArg</h1>
             <p class="text-sm font-medium text-text-secondary uppercase tracking-widest mt-2">Viewer</p>
             
             <div class="mt-12 flex flex-col items-center justify-center gap-4">
-                <button id="open-map-btn" class="btn btn-primary w-60" data-lang-key="startOpenMap">
+                <button id="open-map-btn" class="btn btn-primary w-48" data-lang-key="startOpenMap">
                     Abrir Mapa
                 </button>
-                <button id="open-known-satellites-btn" class="btn btn-secondary w-60" data-lang-key="startSatellites">
+                <button id="open-known-satellites-btn" class="btn btn-secondary w-48" data-lang-key="startSatellites">
                     Satélites
                 </button>
-                <button id="open-best-passes-btn" class="btn btn-secondary w-60" data-lang-key="startBestPasses">
+                <button id="open-best-passes-btn" class="btn btn-secondary w-48" data-lang-key="startBestPasses">
                     Mejores Pasos
                 </button>
             </div>
@@ -875,15 +895,19 @@
     </div>
 
     <nav id="bottom-nav-bar">
-        <button class="nav-item active">
+        <button id="nav-btn-home" class="nav-item active">
             <i class="fa-solid fa-house"></i>
             <span data-lang-key="navHome">Inicio</span>
         </button>
-        <button class="nav-item">
+        <button id="nav-btn-events" class="nav-item">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span data-lang-key="navEvents">Eventos</span>
+        </button>
+        <button id="nav-btn-moon" class="nav-item">
             <i class="fa-solid fa-moon"></i>
             <span data-lang-key="navMoon">Luna</span>
         </button>
-        <button class="nav-item">
+        <button id="nav-btn-menu" class="nav-item">
             <i class="fa-solid fa-bars"></i>
             <span data-lang-key="navMenu">Menú</span>
         </button>
