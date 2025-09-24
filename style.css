@@ -818,6 +818,13 @@ label[for="date-input"], label[for="time-input"] {
     bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom));
 }
 
+/* Ajusta la posición del botón de redes sociales en la pantalla de menú para escritorio */
+@media (min-width: 1024px) {
+    #menu-screen #open-social-btn {
+        bottom: 1.5rem; /* 24px, lo alinea correctamente en la parte inferior */
+    }
+}
+
 /* ==========================================================================
    ADAPTACIÓN PARA LA BARRA DE NAVEGACIÓN INFERIOR
    ========================================================================== */
