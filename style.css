@@ -57,6 +57,15 @@ body {
     min-height: 0;
 }
 
+@media (min-width: 1024px) {
+    #app-container {
+        position: absolute;
+        left: 220px;
+        width: calc(100% - 220px);
+        height: 100%;
+    }
+}
+
 .hidden {
     display: none !important;
 }
@@ -77,6 +86,13 @@ body {
     top: 0;
     left: 0;
     will-change: transform, opacity;
+}
+
+@media (min-width: 1024px) {
+    .screen {
+        width: calc(100% - 220px);
+        left: 220px;
+    }
 }
 
 #start-screen {
@@ -112,115 +128,42 @@ body {
 }
 
 /* ========================================================================== 
-    MENÚ HAMBURGUESA
-    ========================================================================== */
-#hamburger-btn {
-    position: absolute;
-    top: 1.5rem;
-    left: 1rem;
-    z-index: 1100;
-    width: 44px;
-    height: 44px;
-    background: transparent;
-    border: none;
-    border-radius: 9999px;
-    cursor: pointer;
+    PANTALLA DE MENÚ PRINCIPAL
+   ========================================================================== */
+.menu-list-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.2s var(--ease-out-cubic);
-    color: var(--color-text-secondary);
-}
-#hamburger-btn:hover {
-    background-color: var(--color-surface);
-    color: var(--color-text-primary);
-    transform: scale(1.05);
-}
-#hamburger-btn .line {
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    transition: transform 0.4s var(--ease-out-quint), opacity 0.4s var(--ease-out-quint);
-    transform-origin: center;
-}
-
-/* Posición inicial de las líneas para formar la hamburguesa */
-#hamburger-btn .line1 {
-    transform: translateY(-6px);
-}
-#hamburger-btn .line3 {
-    transform: translateY(6px);
-}
-
-/* Transformación a "X" cuando el botón está activo */
-#hamburger-btn.is-active .line1 {
-    transform: rotate(45deg);
-}
-#hamburger-btn.is-active .line2 {
-    opacity: 0;
-}
-#hamburger-btn.is-active .line3 {
-    transform: rotate(-45deg);
-}
-
-#menu-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(13, 17, 23, 0.5);
-    z-index: 1050;
-    opacity: 0;
-    transition: opacity 0.5s var(--ease-out-quint);
-    pointer-events: none;
-}
-#menu-overlay.is-open {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-#hamburger-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: clamp(280px, 75vw, 350px);
-    background-color: rgba(22, 27, 34, 0.8);
-    backdrop-filter: blur(10px);
-    border-right: 1px solid #30363d;
-    z-index: 1060;
-    transform: translateX(-100%);
-    transition: transform 0.5s var(--ease-out-quint);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2rem;
-}
-#hamburger-menu.is-open {
-    transform: translateX(0);
-}
-
-.menu-link {
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    text-align: left;
-    padding: 1rem;
+    gap: 1.25rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
     border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
     transition: all 0.2s var(--ease-out-cubic);
-    opacity: 0;
-    transform: translateX(-20px);
+    border: 1px solid transparent;
 }
-#hamburger-menu.is-open .menu-link {
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 0.4s 0.2s var(--ease-out-quint), transform 0.4s 0.2s var(--ease-out-quint);
-}
-.menu-link:hover {
-    background-color: rgba(88, 166, 255, 0.1);
+
+.menu-list-item:hover {
+    border-color: #30363d;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
     color: var(--color-secondary);
 }
-#hamburger-menu.is-open .menu-link:nth-child(2) { transition-delay: 0.25s; }
-#hamburger-menu.is-open .menu-link:nth-child(3) { transition-delay: 0.3s; }
-#hamburger-menu.is-open .menu-link:nth-child(4) { transition-delay: 0.35s; }
+
+.menu-list-item i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    transition: color 0.2s var(--ease-out-cubic);
+}
+
+.menu-list-item:hover i {
+    color: var(--color-secondary);
+}
 
 
 /* ========================================================================== 
@@ -692,12 +635,12 @@ body {
 }
 
 #prediction-date-display {
-    bottom: 4.25rem;
+    bottom: calc(60px + 4.25rem + env(safe-area-inset-bottom));
     opacity: 0.85;
 }
 
 #toggle-time-control-btn {
-    position: absolute; z-index: 450; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    position: absolute; z-index: 450; bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
     height: auto; width: auto; padding: 0.5rem 1rem; background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(8px);
     border: 1px solid #30363d; border-radius: 9999px; color: var(--color-text-primary); box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     display: flex; justify-content: center; align-items: center; font-size: 0.9rem; transition: all 0.2s var(--ease-out-cubic);
@@ -715,7 +658,7 @@ body {
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid #30363d; 
     box-shadow: 0 8px 30px rgba(0,0,0,0.5); 
-    bottom: 4.5rem; 
+    bottom: calc(60px + 4.5rem + env(safe-area-inset-bottom)); 
     left: 1rem;
     right: 1rem; 
     max-width: 1000px; 
@@ -817,7 +760,7 @@ label[for="date-input"], label[for="time-input"] {
 .time-traveling-active { color: var(--color-warning) !important; animation: pulse-warning 2s infinite; }
 @keyframes pulse-warning { 0%, 100% { opacity: 1; text-shadow: 0 0 5px var(--color-warning); } 50% { opacity: 0.7; text-shadow: none; } }
 
-#map-style-switcher { position: absolute; z-index: 500; bottom: 1.5rem; left: 1rem; display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+#map-style-switcher { position: absolute; z-index: 500; bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom)); left: 1rem; display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 #map-style-options {
     background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(8px); border: 1px solid #30363d;
     border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;
@@ -832,7 +775,7 @@ label[for="date-input"], label[for="time-input"] {
 #action-controls {
     position: absolute;
     z-index: 500;
-    bottom: 1.5rem; 
+    bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom)); 
     right: 1rem; 
     display: flex;
     flex-direction: column-reverse; 
@@ -869,6 +812,50 @@ label[for="date-input"], label[for="time-input"] {
 @keyframes orbit-animation {
     from { transform: rotate(0deg) translateX(35px) rotate(0deg); }
     to { transform: rotate(360deg) translateX(35px) rotate(-360deg); }
+}
+
+#open-social-btn {
+    bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom));
+}
+
+/* ==========================================================================
+   ADAPTACIÓN PARA LA BARRA DE NAVEGACIÓN INFERIOR
+   ========================================================================== */
+body.map-active #bottom-nav-bar {
+    transform: translateY(100%);
+}
+
+body.map-active #open-social-btn {
+    bottom: 1.5rem;
+}
+
+body.map-active .info-screen .overflow-y-auto,
+body.map-active #known-satellites-screen .overflow-y-auto,
+body.map-active #best-passes-screen .overflow-y-auto,
+body.map-active #my-satellites-screen .overflow-y-auto,
+body.map-active #latest-starlinks-screen .overflow-y-auto,
+body.map-active #brightest-satellites-screen .overflow-y-auto {
+    padding-bottom: 1rem;
+}
+
+body.map-active #toggle-time-control-btn {
+    bottom: 1.5rem;
+}
+
+body.map-active #time-control-panel {
+    bottom: 4.5rem;
+}
+
+body.map-active #prediction-date-display {
+    bottom: 4.25rem;
+}
+
+body.map-active #map-style-switcher {
+    bottom: 1.5rem;
+}
+
+body.map-active #action-controls {
+    bottom: 1.5rem;
 }
 
 /* ========================================================================== 
@@ -1110,7 +1097,7 @@ label[for="date-input"], label[for="time-input"] {
 #latest-starlinks-screen .overflow-y-auto,
 #brightest-satellites-screen .overflow-y-auto {
     padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom));
 }
 
 #map-style-switcher,
@@ -2464,4 +2451,174 @@ label[for="date-input"] {
 .moon-day-card.is-full-moon {
     border-color: var(--color-warning);
     background-image: linear-gradient(to right, rgba(247, 181, 48, 0.1), transparent);
+}
+
+/* ========================================================================== 
+   BARRA DE NAVEGACIÓN INFERIOR
+   ========================================================================== */
+#bottom-nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(60px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background-color: rgba(22, 27, 34, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid #30363d;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 8px;
+    z-index: 1200;
+    transition: transform 0.4s var(--ease-out-quint);
+}
+
+@media (min-width: 1024px) {
+    #bottom-nav-bar {
+        top: 0;
+        right: auto;
+        bottom: auto;
+        width: 220px;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding: 0;
+        border-top: none;
+        border-right: 1px solid #30363d;
+    }
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s var(--ease-out-cubic);
+    border-radius: 8px;
+    padding: 4px 12px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 1024px) {
+    .nav-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        width: 85%;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+}
+
+.nav-item i {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.nav-item span {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+
+@media (min-width: 1024px) {
+    .nav-item i {
+        font-size: 1.5rem;
+        width: 30px; /* Ancho fijo para alinear el texto */
+        text-align: center;
+    }
+    .nav-item span {
+        font-size: 1rem;
+    }
+}
+
+.nav-item:hover {
+    color: var(--color-text-primary);
+    background-color: rgba(88, 166, 255, 0.1);
+}
+
+.nav-item.active {
+    color: var(--color-secondary);
+}
+
+/* ========================================================================== 
+   ESTILOS ADAPTATIVOS PARA LA BARRA DE NAVEGACIÓN (ESCRITORIO)
+   ========================================================================== */
+@media (min-width: 1024px) {
+    /* Ajuste del cuerpo para dejar espacio a la barra lateral (con transición) */
+    body {
+        padding-left: 220px;
+        transition: padding-left 0.4s var(--ease-out-quint);
+    }
+
+    /* Posiciona los contenedores principales a la derecha de la barra (con transición) */
+    #app-container,
+    .screen {
+        left: 220px;
+        width: calc(100% - 220px);
+        transition: width 0.4s var(--ease-out-quint), left 0.4s var(--ease-out-quint);
+    }
+
+    /* Transforma la barra inferior en una barra lateral izquierda más ancha */
+    #bottom-nav-bar {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: auto;
+        width: 220px;
+        height: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        gap: 1rem;
+        border-top: none;
+        border-right: 1px solid #30363d;
+    }
+
+    /* Oculta la barra lateral cuando la vista de mapa está activa */
+    body.map-active #bottom-nav-bar {
+        transform: translateX(-100%);
+    }
+    
+    /* Expande el contenido principal cuando la barra se oculta */
+    body.map-active {
+        padding-left: 0;
+    }
+    body.map-active #app-container,
+    body.map-active .screen {
+        width: 100%;
+        left: 0;
+    }
+
+    /* Ajusta el diseño de cada botón de navegación para la barra ancha */
+    .nav-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        width: 85%; /* No ocupa todo el ancho para un mejor centrado y estética */
+        padding: 1rem;
+        gap: 1.5rem;
+        border-radius: 8px; /* Bordes redondeados para un look más moderno */
+    }
+
+    /* Ajusta el tamaño del ícono y el texto */
+    .nav-item i {
+        font-size: 1.5rem;
+        width: 30px; /* Ancho fijo para alinear el texto */
+        text-align: center;
+    }
+
+    .nav-item span {
+        font-size: 1rem;
+    }
 }

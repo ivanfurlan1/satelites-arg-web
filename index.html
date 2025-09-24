@@ -50,20 +50,41 @@
     
     <div id="toast-container"></div>
 
-    <button id="hamburger-btn" data-lang-key="hamburger" aria-label="Abrir menú" title="Abrir menú">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line class="line line1" x1="4" y1="12" x2="20" y2="12"/>
-            <line class="line line2" x1="4" y1="12" x2="20" y2="12"/>
-            <line class="line line3" x1="4" y1="12" x2="20" y2="12"/>
-        </svg>
-    </button>
-    <div id="menu-overlay"></div>
-    <nav id="hamburger-menu">
-        <button id="open-about-btn" class="menu-link" data-lang-key="menuAbout">Sobre nosotros</button>
-        <button id="open-guide-btn" class="menu-link" data-lang-key="menuGuide">Guía de Uso</button>
-        <button id="open-legal-btn" class="menu-link" data-lang-key="menuContact">Contacto y Privacidad</button>
-        <button id="open-settings-btn" class="menu-link" data-lang-key="menuSettings">Ajustes</button>
-    </nav>
+    <div id="menu-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="satellites-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-start-from-menu-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="navMenu">Menú</h2>
+                </div>
+            </header>
+            <div class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+                <div id="main-menu-list" class="space-y-3 my-4">
+                    <button id="menu-btn-about" class="menu-list-item">
+                        <i class="fa-solid fa-users"></i>
+                        <span data-lang-key="menuAbout">Sobre nosotros</span>
+                    </button>
+                    <button id="menu-btn-guide" class="menu-list-item">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span data-lang-key="menuGuide">Guía de Uso</span>
+                    </button>
+                    <button id="menu-btn-contact" class="menu-list-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span data-lang-key="menuContact">Contacto y Privacidad</span>
+                    </button>
+                    <button id="menu-btn-settings" class="menu-list-item">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span data-lang-key="menuSettings">Ajustes</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <button id="open-social-btn" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-text-secondary transition-colors duration-200 tracking-wider bg-surface/50 backdrop-blur-sm border border-gray-700 rounded-full px-4 py-1.5 hover:border-secondary hover:text-secondary" data-lang-key="startSocial" >
+            SatelitesArg
+        </button>
+    </div>
 
     <div id="start-screen" class="screen">
         <button id="daily-update-pill" class="hidden" data-lang-key="dailyUpdatePill">
@@ -98,10 +119,6 @@
                 </button>
             </div>
         </div>
-
-        <button id="open-social-btn" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-text-secondary transition-colors duration-200 tracking-wider bg-surface/50 backdrop-blur-sm border border-gray-700 rounded-full px-4 py-1.5 hover:border-secondary hover:text-secondary" data-lang-key="startSocial" >
-            SatelitesArg
-        </button>
     </div>
 
     <div id="daily-update-modal" class="modal-overlay hidden">
@@ -856,6 +873,21 @@
             <p id="loading-modal-text" class="font-bold mt-4 text-text-primary" data-lang-key="calculating">Calculando...</p>
         </div>
     </div>
+
+    <nav id="bottom-nav-bar">
+        <button class="nav-item active">
+            <i class="fa-solid fa-house"></i>
+            <span data-lang-key="navHome">Inicio</span>
+        </button>
+        <button class="nav-item">
+            <i class="fa-solid fa-moon"></i>
+            <span data-lang-key="navMoon">Luna</span>
+        </button>
+        <button class="nav-item">
+            <i class="fa-solid fa-bars"></i>
+            <span data-lang-key="navMenu">Menú</span>
+        </button>
+    </nav>
 
     <script>
       // Se usa la fecha y hora actual para asegurar que el navegador siempre pida la última versión de los archivos.

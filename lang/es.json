@@ -215,5 +215,8 @@
   "addLocationManually": "Añadir ubicación manualmente",
   "manualLocationActive": "Haz clic en el mapa para seleccionar...",
   "manualLocationInstructions": "Haz clic para fijar tu ubicación en el mapa.",
-  "manualLocationName": "Ubicación Manual"
+  "manualLocationName": "Ubicación Manual",
+  "navHome": "Inicio",
+  "navMoon": "Luna",
+  "navMenu": "Menú"
 }
