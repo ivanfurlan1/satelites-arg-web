@@ -97,7 +97,7 @@
   "calibrating": "Calibrating...",
   "resetRadar": { "title": "Reset Radar" },
   "expandRadar": { "title": "Expand Radar" },
-  "simulationControl": "Time",
+  "simulationControl": "Time<br>Control",
   "timelineSlider": { "title": "Drag to change the time of day" },
   "rewindTime": { "title": "Rewind time" },
   "timeStep": { "title": "Change time unit (Seconds/Minutes/Hours)", "text": "MIN" },

@@ -143,14 +143,24 @@ body {
     transition: transform 0.4s var(--ease-out-quint), opacity 0.4s var(--ease-out-quint);
     transform-origin: center;
 }
+
+/* Posición inicial de las líneas para formar la hamburguesa */
+#hamburger-btn .line1 {
+    transform: translateY(-6px);
+}
+#hamburger-btn .line3 {
+    transform: translateY(6px);
+}
+
+/* Transformación a "X" cuando el botón está activo */
 #hamburger-btn.is-active .line1 {
-    transform: translateY(6px) rotate(45deg);
+    transform: rotate(45deg);
 }
 #hamburger-btn.is-active .line2 {
     opacity: 0;
 }
 #hamburger-btn.is-active .line3 {
-    transform: translateY(-6px) rotate(-45deg);
+    transform: rotate(-45deg);
 }
 
 #menu-overlay {
@@ -210,6 +220,7 @@ body {
 }
 #hamburger-menu.is-open .menu-link:nth-child(2) { transition-delay: 0.25s; }
 #hamburger-menu.is-open .menu-link:nth-child(3) { transition-delay: 0.3s; }
+#hamburger-menu.is-open .menu-link:nth-child(4) { transition-delay: 0.35s; }
 
 
 /* ========================================================================== 
