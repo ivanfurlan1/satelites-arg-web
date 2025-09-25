@@ -71,8 +71,13 @@
   "legalLi9": "<strong>CelesTrak</strong> for maintaining an updated and accessible TLE database.",
   "legalLi10": "<strong>Leaflet.js</strong>, <strong>SunCalc.js</strong>, and the map providers for the tools that bring the visualization to life.",
   "settingsTitle": "Settings",
-  "settingsMapMode": "Default Map Mode",
+  "settingsMapMode": "Map",
   "settingsLanguage": "Language",
+  "settingsDefaultsSection": "Defaults",
+  "settingsGeneralSection": "General",
+  "settingsDayNight": "Day & Night",
+  "settingsOn": "On",
+  "settingsOff": "Off",
   "langButtonEs": "Español",
   "langButtonEn": "English",
   "satellitesTitle": "Satellites",
@@ -220,5 +225,6 @@
   "manualLocationName": "Manual Location",
   "navHome": "Home",
   "navMoon": "Moon",
-  "navMenu": "Menu"
+  "navMenu": "Menu",
+  "dayNightToggle": "Day & Night"
 }

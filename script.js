@@ -179,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const App = {
 		state: {
 			audioInitialized: false, mapInitialized: false, trackedSatellites: [], observerCoords: null,
+			nightOverlayLayer: null,
 			observerTimeZone: null, 
 			geocodeControllers: { map: null, bestPasses: null },
 			geocodeTimeouts: { map: null, bestPasses: null },
@@ -306,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.time.updateResetTimeButtonState(); // Initialize button state
 		},
 		cacheDOMElements() {
-			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'show-previous-best-passes-btn', 'show-previous-container', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu' ];
+			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'show-previous-best-passes-btn', 'show-previous-container', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off' ];
 			ids.forEach(id => { const camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase()); this.elements[camelCaseId] = document.getElementById(id); });
 			if (this.elements.pageIndicatorDots) {
 				this.elements.pageIndicatorDots.dots = this.elements.pageIndicatorDots.querySelectorAll('.dot');
@@ -314,6 +315,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		},
 		initMap() {
 			if (this.state.mapInitialized) return;
+
+			// Sincroniza el estado visual del interruptor con el ajuste guardado
+			if(App.elements.toggleNightOverlayBtn) {
+				App.elements.toggleNightOverlayBtn.checked = this.settings.current.showNightOverlay;
+			}
+
 			this.state.map = L.map('map', { 
 				zoomControl: false, 
 				attributionControl: false, 
@@ -333,6 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.state.map.createPane('trajectoryPane');
 			this.state.map.getPane('trajectoryPane').style.zIndex = 450;
 			this.state.map.getPane('trajectoryPane').style.pointerEvents = 'none';
+
+			this.nightOverlay.init();
 
 			this.mapLayers.defineLayers(); 
 			this.mapLayers.switchLayer(this.settings.current.defaultMapLayer);
@@ -955,6 +964,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			elements.settingMapDark.addEventListener('click', () => this.settings.setMapMode('dark'));
 			elements.settingMapSatellite.addEventListener('click', () => this.settings.setMapMode('satellite'));
 
+			elements.settingDayNightOn.addEventListener('click', () => this.settings.setDefaultNightOverlay(true));
+			elements.settingDayNightOff.addEventListener('click', () => this.settings.setDefaultNightOverlay(false));
+
 			const { languageDropdownToggle, languageDropdownMenu } = elements;
 			if (languageDropdownToggle && languageDropdownMenu) {
 				languageDropdownToggle.addEventListener('click', (e) => {
@@ -1143,6 +1155,10 @@ elements.navBtnMenu.addEventListener('click', () => {
                     });
 			// --- FIN: Lógica para la barra de navegación inferior ---
 
+			elements.toggleNightOverlayBtn.addEventListener('change', (e) => {
+				App.settings.setNightOverlay(e.target.checked);
+			});
+
 			// --- INICIO: Corrección para el estado "activo" persistente de los botones ---
 			let pressedElement = null;
 
@@ -1242,6 +1258,68 @@ elements.navBtnMenu.addEventListener('click', () => {
 		},
 		playSound(soundKey, note) { 
 			return;
+		},
+
+		nightOverlay: {
+			init() {
+				if (!App.state.map) return;
+				// Pane para la sombra de la noche para controlar su z-index
+				App.state.map.createPane('nightOverlayPane');
+				App.state.map.getPane('nightOverlayPane').style.zIndex = 410; // Debajo de los marcadores pero encima de los tiles
+				App.state.nightOverlayLayer = L.layerGroup([], { pane: 'nightOverlayPane' }).addTo(App.state.map);
+				this.update();
+			},
+	
+			getSunPosition(time) {
+				const sunEci = getSunEci(time);
+				const gmst = satellite.gstime(time);
+				const sunGeodetic = satellite.eciToGeodetic(sunEci, gmst);
+				return {
+					lat: satellite.radiansToDegrees(sunGeodetic.latitude),
+					lon: satellite.radiansToDegrees(sunGeodetic.longitude)
+				};
+			},
+	
+			update() {
+				if (!App.state.map || !App.state.nightOverlayLayer) return;
+	
+				App.state.nightOverlayLayer.clearLayers();
+                
+				if (!App.settings.current.showNightOverlay) {
+					return;
+				}
+
+				const time = App.state.currentTime;
+				const sunPos = this.getSunPosition(time);
+	
+				const terminatorPoints = [];
+				for (let i = 0; i <= 360; i += 2) {
+					const lon = sunPos.lon + i - 180;
+					// Evita la división por cero en los polos
+					const tanLat = Math.tan(satellite.degreesToRadians(sunPos.lat));
+					if (Math.abs(tanLat) < 1e-6) {
+						terminatorPoints.push([0, lon]);
+						continue;
+					}
+					const lat = -Math.atan(Math.cos(satellite.degreesToRadians(lon - sunPos.lon)) / tanLat);
+					terminatorPoints.push([satellite.radiansToDegrees(lat), lon]);
+				}
+	
+				const northPoleIsDark = sunPos.lat < 0;
+				const poleLat = northPoleIsDark ? 90.0 : -90.0;
+	
+				const nightPolygonCoords = [
+					...terminatorPoints,
+					[poleLat, terminatorPoints[terminatorPoints.length - 1][1]],
+					[poleLat, terminatorPoints[0][1]]
+				];
+	
+				const offsets = [-720, -360, 0, 360, 720];
+				offsets.forEach(offset => {
+					const shiftedPolygon = nightPolygonCoords.map(p => [p[0], p[1] + offset]);
+					L.polygon(shiftedPolygon, { className: 'night-overlay', smoothFactor: 1 }).addTo(App.state.nightOverlayLayer);
+				});
+			}
 		},
 
 		nearbyMode: {
@@ -5013,6 +5091,8 @@ elements.navBtnMenu.addEventListener('click', () => {
 					return;
 				}
 
+				App.nightOverlay.update();
+			
 				App.satellites.updatePositions();
 			
 				if (App.state.isPassViewActive && !App.state.passTrajectoryDrawn) {
@@ -5127,19 +5207,9 @@ elements.navBtnMenu.addEventListener('click', () => {
 				}
 				App.state.currentTime = new Date();
 				this.updateTimeUI();
+				// Se llama a la función principal de actualización para refrescar todo (sombra, órbitas, etc.)
+				this.updateMapForCurrentTime({ forceOrbitRedraw: true }); 
 				this.startRealTimeUpdates();
-			
-				if (!App.state.isNearbyModeActive) {
-					const previouslySelectedSat = App.state.selectedSatForOrbit;
-					App.satellites.handleTracking();
-					if (previouslySelectedSat) {
-						App.state.selectedSatForOrbit = previouslySelectedSat;
-						const satIndex = App.state.trackedSatellites.findIndex(s => s.tle === previouslySelectedSat.tle);
-						if (satIndex !== -1) {
-							App.satellites.drawSingleOrbit(satIndex);
-						}
-					}
-				}
 			},
 
 			adjustTime(direction) { 
@@ -5851,8 +5921,10 @@ elements.navBtnMenu.addEventListener('click', () => {
 		settings: {
 			current: {},
 			defaults: {
-				language: 'en',
+				language: 'es',
 				defaultMapLayer: 'dark',
+				defaultNightOverlay: false, // Nuevo ajuste por defecto
+				showNightOverlay: false     // Estado actual, no un ajuste guardable
 			},
 			init() {
 				this.load();
@@ -5873,9 +5945,13 @@ elements.navBtnMenu.addEventListener('click', () => {
                     } else {
                         this.current = { ...this.defaults, ...savedSettings };
                     }
+                    
+                    // El estado actual de la capa se establece basado en el ajuste por defecto
+                    this.current.showNightOverlay = this.current.defaultNightOverlay;
 
 				} catch (e) {
 					this.current = { ...this.defaults };
+                    this.current.showNightOverlay = this.current.defaultNightOverlay;
 				}
 			},
 			save() {
@@ -5891,6 +5967,26 @@ elements.navBtnMenu.addEventListener('click', () => {
 				this.current.defaultMapLayer = mode;
 				this.save();
 				this.updateUI();
+			},
+			setDefaultNightOverlay(show) {
+				if (show === this.current.defaultNightOverlay) return;
+				App.playSound('uiClick', 'D4');
+				this.current.defaultNightOverlay = show;
+				this.current.showNightOverlay = show; // Actualiza también el estado actual
+				this.save();
+				this.updateUI();
+				// Actualiza el mapa en tiempo real si está visible
+				if (App.state.mapInitialized) {
+					App.elements.toggleNightOverlayBtn.checked = show;
+					App.nightOverlay.update();
+				}
+			},
+			setNightOverlay(show) {
+				if (show === this.current.showNightOverlay) return;
+				App.playSound('uiClick', 'D4');
+				this.current.showNightOverlay = show;
+				this.save();
+				App.nightOverlay.update();
 			},
 			setLanguage(lang) {
 				if (lang === this.current.language) return;
@@ -5910,11 +6006,20 @@ elements.navBtnMenu.addEventListener('click', () => {
 				}
 			},
 			updateUI() {
-				const { settingMapDark, settingMapSatellite, currentLanguageDisplay, languageDropdownMenu } = App.elements;
+				const { settingMapDark, settingMapSatellite, settingDayNightOn, settingDayNightOff, currentLanguageDisplay, languageDropdownMenu, toggleNightOverlayBtn } = App.elements;
 				
+				if (toggleNightOverlayBtn) {
+					toggleNightOverlayBtn.checked = this.current.showNightOverlay;
+				}
+
 				if (settingMapDark && settingMapSatellite) {
 					settingMapDark.classList.toggle('active', this.current.defaultMapLayer === 'dark');
 					settingMapSatellite.classList.toggle('active', this.current.defaultMapLayer === 'satellite');
+				}
+
+				if (settingDayNightOn && settingDayNightOff) {
+					settingDayNightOn.classList.toggle('active', this.current.defaultNightOverlay === true);
+					settingDayNightOff.classList.toggle('active', this.current.defaultNightOverlay === false);
 				}
 				
 				if (currentLanguageDisplay && languageDropdownMenu) {

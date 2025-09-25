@@ -71,8 +71,13 @@
   "legalLi9": "<strong>CelesTrak</strong> por mantener una base de datos TLE actualizada y accesible.",
   "legalLi10": "<strong>Leaflet.js</strong>, <strong>SunCalc.js</strong> y los proveedores de mapas por las herramientas que dan vida a la visualización.",
   "settingsTitle": "Ajustes",
-  "settingsMapMode": "Mapa por Defecto",
+  "settingsMapMode": "Mapa",
   "settingsLanguage": "Idioma",
+  "settingsDefaultsSection": "Por Defecto",
+  "settingsGeneralSection": "General",
+  "settingsDayNight": "Día y Noche",
+  "settingsOn": "On",
+  "settingsOff": "Off",
   "langButtonEs": "Español",
   "langButtonEn": "English",
   "satellitesTitle": "Satélites",
@@ -221,5 +226,6 @@
   "manualLocationName": "Ubicación Manual",
   "navHome": "Inicio",
   "navMoon": "Luna",
-  "navMenu": "Menú"
+  "navMenu": "Menú",
+  "dayNightToggle": "Día y Noche"
 }

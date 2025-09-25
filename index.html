@@ -294,30 +294,42 @@
 
     <div id="info-screen-settings" class="screen hidden !p-0 !justify-start info-screen">
         <div class="w-full max-w-3xl flex flex-col h-full">
-            <div class="px-6 pt-6 pb-4">
+            <header class="satellites-header !py-6 !px-4 sm:!px-6">
                 <div class="relative flex items-center justify-center">
                     <button id="back-to-start-from-settings-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    <h2 class="text-2xl font-bold" data-lang-key="settingsTitle">Ajustes</h2>
+                    <h2 class="text-xl font-bold" data-lang-key="settingsTitle">Ajustes</h2>
                 </div>
-            </div>
+            </header>
             <div class="flex-grow min-h-0 overflow-y-auto px-6 info-content">
                 
-                <div id="settings-list" class="space-y-1">
-
+                <div id="settings-list">
+                    <h3 class="setting-section-title" data-lang-key="settingsDefaultsSection">Por Defecto</h3>
                     <div class="setting-item">
                         <div class="setting-item-label">
-                            <span data-lang-key="settingsMapMode">Mapa por Defecto</span>
+                            <span data-lang-key="settingsMapMode">Mapa</span>
                         </div>
                         <div class="setting-item-control">
-                            <div id="setting-map-mode-selector" class="segmented-control">
+                            <div class="segmented-control">
                                 <button id="setting-map-dark" class="segmented-control-btn" data-value="dark" data-lang-key="mapStyleDark">Oscuro</button>
                                 <button id="setting-map-satellite" class="segmented-control-btn" data-value="satellite" data-lang-key="mapStyleSatellite">Satélite</button>
                             </div>
                         </div>
                     </div>
+                    <div class="setting-item">
+                        <div class="setting-item-label">
+                            <span data-lang-key="settingsDayNight">Día y Noche</span>
+                        </div>
+                        <div class="setting-item-control">
+                            <div class="segmented-control">
+                                <button id="setting-day-night-on" class="segmented-control-btn" data-value="true" data-lang-key="settingsOn">On</button>
+                                <button id="setting-day-night-off" class="segmented-control-btn" data-value="false" data-lang-key="settingsOff">Off</button>
+                            </div>
+                        </div>
+                    </div>
 
+                    <h3 class="setting-section-title" data-lang-key="settingsGeneralSection">General</h3>
                     <div class="setting-item">
                         <div class="setting-item-label">
                             <span data-lang-key="settingsLanguage">Idioma</span>
@@ -335,7 +347,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
             </div>
@@ -681,8 +692,18 @@
 
         <div id="map-style-switcher">
             <div id="map-style-options">
-                <button class="map-style-btn active" data-layer="dark" data-lang-key="mapStyleDark">Oscuro</button>
-                <button class="map-style-btn" data-layer="satellite" data-lang-key="mapStyleSatellite">Satélite</button>
+                <div class="style-button-group">
+                    <button class="map-style-btn active" data-layer="dark" data-lang-key="mapStyleDark">Oscuro</button>
+                    <button class="map-style-btn" data-layer="satellite" data-lang-key="mapStyleSatellite">Satélite</button>
+                </div>
+                <hr class="style-divider">
+                <div class="map-style-toggle-option">
+                    <span data-lang-key="dayNightToggle">Día y Noche</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-night-overlay-btn">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
             </div>
             <button id="map-style-toggle-btn" class="btn btn-secondary !p-0 h-11 w-11 flex items-center justify-center" data-lang-key="switchMapStyle" title="Cambiar estilo del mapa">
                 <i class="fa-solid fa-layer-group text-lg"></i>
