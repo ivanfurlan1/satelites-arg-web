@@ -2259,13 +2259,13 @@ elements.navBtnMenu.addEventListener('click', () => {
                 const lang = App.settings.current.language;
 
 				App.state.baseLayers = {
-					dark: L.tileLayer(`https://api.maptiler.com/maps/streets-v2-dark/{z}/{x}/{y}@2x.png?key=${maptilerApiKey}&language=${lang}`, {
+					dark: L.tileLayer(`https://api.maptiler.com/maps/streets-v2-dark/{z}/{x}/{y}.png?key=${maptilerApiKey}&language=${lang}`, {
 						attribution: maptilerAttribution,
 						maxZoom: 20,
 						tileSize: 512,
 						zoomOffset: -1
 					}),
-					satellite: L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}@2x.jpg?key=${maptilerApiKey}&language=${lang}`, {
+					satellite: L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${maptilerApiKey}&language=${lang}`, {
 						attribution: maptilerAttribution,
 						maxZoom: 19,
 						tileSize: 512,
