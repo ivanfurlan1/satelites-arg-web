@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.time.updateResetTimeButtonState(); // Initialize button state
 		},
 		cacheDOMElements() {
-			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off', 'show-previous-passes-btn-new' ];
+			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off', 'show-previous-passes-btn-new', 'slider-prev-btn', 'slider-next-btn' ];
 			ids.forEach(id => { const camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase()); this.elements[camelCaseId] = document.getElementById(id); });
 			if (this.elements.pageIndicatorDots) {
 				this.elements.pageIndicatorDots.dots = this.elements.pageIndicatorDots.querySelectorAll('.dot');
@@ -1849,7 +1849,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					dotsContainer.appendChild(dot);
 				});
 				
-				this._setupSliderObserver();
+				this._setupSliderControls();
 			},
 
 			_createFeaturedEventCard(event) {
@@ -1883,21 +1883,60 @@ elements.navBtnMenu.addEventListener('click', () => {
 				return card;
 			},
 
-			_setupSliderObserver() {
+			_setupSliderControls() {
 				const slider = document.getElementById('featured-events-slider');
 				const dots = document.querySelectorAll('#slider-dots .dot');
-				if (!slider || dots.length === 0) return;
+				const prevBtn = App.elements.sliderPrevBtn;
+				const nextBtn = App.elements.sliderNextBtn;
+
+				if (!slider || !prevBtn || !nextBtn) return;
 			
-				const observer = new IntersectionObserver((entries) => {
-					entries.forEach(entry => {
-						if (entry.isIntersecting) {
-							const index = Array.from(slider.children).indexOf(entry.target);
-							dots.forEach((dot, i) => dot.classList.toggle('active-dot', i === index));
-						}
-					});
-				}, { root: slider, threshold: 0.6 });
-			
-				slider.querySelectorAll('.event-card-featured').forEach(card => observer.observe(card));
+				// 1. Lógica para los puntos (dots)
+				if (dots.length > 0) {
+					const observer = new IntersectionObserver((entries) => {
+						entries.forEach(entry => {
+							if (entry.isIntersecting) {
+								const index = Array.from(slider.children).indexOf(entry.target);
+								dots.forEach((dot, i) => dot.classList.toggle('active-dot', i === index));
+							}
+						});
+					}, { root: slider, threshold: 0.6 });
+				
+					slider.querySelectorAll('.event-card-featured').forEach(card => observer.observe(card));
+				}
+
+				// 2. Lógica para las flechas de navegación (escritorio)
+				const scrollAmount = () => {
+					const firstCard = slider.querySelector('.event-card-featured');
+					// Usamos el ancho de la tarjeta + el margen derecho para un desplazamiento preciso
+					return firstCard ? firstCard.offsetWidth + parseInt(getComputedStyle(firstCard).marginRight) : 300;
+				};
+
+				const updateArrowState = () => {
+					// Usamos un pequeño margen de error (1px) para los cálculos
+					const atStart = slider.scrollLeft < 1;
+					const atEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1;
+					prevBtn.disabled = atStart;
+					nextBtn.disabled = atEnd;
+				};
+
+				prevBtn.addEventListener('click', () => {
+					slider.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+				});
+
+				nextBtn.addEventListener('click', () => {
+					slider.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+				});
+
+				// Actualiza el estado de las flechas cuando el slider se detiene
+				let scrollTimeout;
+				slider.addEventListener('scroll', () => {
+					clearTimeout(scrollTimeout);
+					scrollTimeout = setTimeout(updateArrowState, 150);
+				});
+
+				// Llamada inicial para establecer el estado correcto al cargar
+				updateArrowState();
 			},
 
 			async _updateLaunchCard() {
@@ -3765,7 +3804,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					if (sat.markers.length > 0) {
 						const targetLatLng = sat.markers[0].getLatLng();
 						const currentZoom = App.state.map.getZoom();
-						const targetZoom = Math.max(currentZoom, 3); 
+						const targetZoom = Math.max(currentZoom, 2.5); 
 			
 						if (currentZoom < 2.5) {
 							App.state.map.setView(targetLatLng, targetZoom, {

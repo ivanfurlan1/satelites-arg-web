@@ -2859,12 +2859,36 @@ label[for="date-input"] {
 }
 
 /* Slider de Eventos Destacados */
+#featured-events-container {
+    /* Hacemos que el contenedor ignore el padding de su padre para que el slider ocupe todo el ancho */
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+@media (min-width: 640px) {
+    #featured-events-container {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+    }
+}
+
 #featured-events-slider {
     padding-bottom: 1rem; /* Espacio para que la sombra no se corte */
+    /* Añadimos padding a la izquierda para alinear la primera tarjeta con el contenido. */
+    padding-left: 1rem;
+    /* scroll-padding alinea el punto de "snap" con el inicio del contenido. */
+    scroll-padding-left: 1rem;
+}
+
+@media (min-width: 640px) {
+    #featured-events-slider {
+        padding-left: 1.5rem;
+        scroll-padding-left: 1.5rem;
+    }
 }
 .event-card-featured {
-    flex: 0 0 85%;
-    max-width: 85%;
+    flex: 0 0 calc(100% - 4rem);
+    max-width: calc(100% - 4rem);
     aspect-ratio: 16 / 9;
     margin-right: 1rem;
     position: relative;
@@ -2874,7 +2898,7 @@ label[for="date-input"] {
     transition: transform 0.3s var(--ease-out-quint);
 }
 .event-card-featured:first-child {
-    margin-left: 1rem;
+    margin-left: 0;
 }
 .event-card-featured:hover {
     transform: translateY(-4px);
@@ -2924,8 +2948,102 @@ label[for="date-input"] {
     background-color: var(--color-secondary);
     border-color: var(--color-secondary);
 }
+
+/* Ajusta el contenedor del slider para que se extienda a los bordes de la pantalla */
+#featured-events-container {
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+/* Añade padding interno al slider para alinear la primera tarjeta con el contenido */
+#featured-events-slider {
+    padding-left: 1rem;
+    scroll-padding-left: 1rem; /* Para que el snap funcione con el padding */
+}
+
+@media (min-width: 640px) {
+    #featured-events-container {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+    }
+    #featured-events-slider {
+        padding-left: 1.5rem;
+        scroll-padding-left: 1.5rem;
+    }
+}
+
+/* Ajusta el contenedor del slider para que se extienda a los bordes de la pantalla */
+#featured-events-container {
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+/* Añade padding interno al slider para alinear la primera tarjeta con el contenido */
+#featured-events-slider {
+    padding-left: 1rem;
+    scroll-padding-left: 1rem; /* Para que el snap funcione con el padding */
+}
+
+@media (min-width: 640px) {
+    #featured-events-container {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+    }
+    #featured-events-slider {
+        padding-left: 1.5rem;
+        scroll-padding-left: 1.5rem;
+    }
+}
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Botones de Navegación del Slider de Eventos (Solo Escritorio) */
+.slider-nav-btn {
+    display: none; /* Ocultos por defecto en móvil */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(22, 27, 34, 0.7);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid #30363d;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out-cubic);
+}
+
+.slider-nav-btn:hover {
+    background-color: var(--color-surface);
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.slider-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+}
+
+.slider-nav-btn.left-0 {
+    left: 8px;
+}
+
+.slider-nav-btn.right-0 {
+    right: 8px;
+}
+
+@media (min-width: 1024px) {
+    .slider-nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
 
 /* Tarjeta de Pasos de Satélites */
 .pass-card-event {
