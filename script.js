@@ -4720,7 +4720,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 				let interval = 1;
 				if (zoom < 3) { interval = 15; }
 				else if (zoom < 3.5) { interval = 5; }
-				else if (zoom < 4.5) { interval = 2; }
+				else { interval = 2; }
 
 				const uniqueMinutes = new Map();
 				allLabels.forEach(label => {
