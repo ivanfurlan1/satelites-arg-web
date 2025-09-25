@@ -1144,31 +1144,67 @@ elements.navBtnMenu.addEventListener('click', () => {
 			// --- FIN: Lógica para la barra de navegación inferior ---
 
 			// --- INICIO: Corrección para el estado "activo" persistente de los botones ---
+			let pressedElement = null;
+
+			// Función centralizada para limpiar el estado presionado y remover los listeners globales.
+			function clearPressedState() {
+				if (pressedElement) {
+					pressedElement.classList.remove('is-pressed');
+					pressedElement = null;
+				}
+				// Se remueven los listeners del documento para evitar acumulación y ejecuciones innecesarias.
+				document.removeEventListener('mouseup', clearPressedState);
+				document.removeEventListener('touchend', clearPressedState);
+				document.removeEventListener('touchcancel', clearPressedState);
+				document.removeEventListener('mousemove', handleMove);
+				document.removeEventListener('touchmove', handleMove);
+			}
+
+			// Maneja el movimiento del puntero (mouse o dedo).
+			function handleMove(event) {
+				if (!pressedElement) return;
+
+				const x = event.clientX ?? event.touches?.[0]?.clientX;
+				const y = event.clientY ?? event.touches?.[0]?.clientY;
+
+				// Si no hay coordenadas (el toque terminó), se limpia el estado.
+				if (x === undefined || y === undefined) {
+					clearPressedState();
+					return;
+				}
+
+				const elementAtPoint = document.elementFromPoint(x, y);
+				
+				// Si el puntero ya no está sobre el elemento presionado, se limpia el estado.
+				if (!pressedElement.contains(elementAtPoint)) {
+					clearPressedState();
+				}
+			}
+			
+			// Listener principal que inicia la interacción en el documento.
 			function handleInteractionStart(event) {
-				// Se busca el elemento interactivo más cercano al punto del evento
+				// Se limpia cualquier estado anterior por si quedó "pegado".
+				clearPressedState();
+				
 				const target = event.target.closest('.btn, .menu-list-item, .nav-item, .satellite-nav-btn, .modal-satellite-card, .pass-card-clickable, .satellite-entry-clickable');
+				
 				if (target) {
-					target.classList.add('is-pressed');
+					pressedElement = target;
+					pressedElement.classList.add('is-pressed');
+
+					// Una vez que se presiona un elemento, se activan los listeners globales
+					// para detectar cuándo y dónde se suelta o se mueve el puntero.
+					document.addEventListener('mouseup', clearPressedState);
+					document.addEventListener('touchend', clearPressedState);
+					document.addEventListener('touchcancel', clearPressedState);
+					document.addEventListener('mousemove', handleMove);
+					document.addEventListener('touchmove', handleMove, { passive: true });
 				}
 			}
 
-			function handleInteractionEnd() {
-				// Elimina la clase 'is-pressed' de CUALQUIER elemento que la tenga.
-				// Esto asegura que si el usuario arrastra el dedo/mouse fuera, el estado se limpie.
-				document.querySelectorAll('.is-pressed').forEach(el => {
-					el.classList.remove('is-pressed');
-				});
-			}
-
-			// Eventos para el INICIO de la interacción (táctil o con mouse)
+			// Se asignan los listeners iniciales para mousedown y touchstart.
+			document.addEventListener('mousedown', handleInteractionStart, { passive: true });
 			document.addEventListener('touchstart', handleInteractionStart, { passive: true });
-			document.addEventListener('mousedown', handleInteractionStart);
-
-			// Eventos para el FIN de la interacción (cubre todos los casos posibles)
-			document.addEventListener('touchend', handleInteractionEnd);
-			document.addEventListener('mouseup', handleInteractionEnd);
-			document.addEventListener('mouseleave', handleInteractionEnd); // Si el mouse sale del documento
-			document.addEventListener('touchcancel', handleInteractionEnd); // Si la interacción táctil se cancela por el sistema
 			// --- FIN: Corrección para el estado "activo" persistente de los botones ---
 		},
 		openMapAndTrackDefault() {

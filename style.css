@@ -943,8 +943,8 @@ label[for="date-input"], label[for="time-input"] {
     margin-top: 2.5rem;
 }
 
-#open-social-btn {
-    bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom));
+#menu-screen #open-social-btn {
+    bottom: calc(80px + 1rem + env(safe-area-inset-bottom));
 }
 
 /* Ajusta la posición del botón de redes sociales en la pantalla de menú para escritorio */
@@ -1191,6 +1191,15 @@ body.map-active #action-controls {
 .search-pill-input::placeholder {
     color: var(--color-text-secondary);
     font-weight: 400;
+}
+
+.search-pill-input:-webkit-autofill,
+.search-pill-input:-webkit-autofill:hover,
+.search-pill-input:-webkit-autofill:focus,
+.search-pill-input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-text-primary) !important;
+    box-shadow: 0 0 0 30px var(--color-background) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 .pass-card {
@@ -2719,25 +2728,25 @@ label[for="date-input"] {
 @media (min-width: 1024px) {
     /* Mantenemos el ajuste para el bloque principal del logo y botones */
     #start-screen .text-center {
-        transform: translateX(-110px);
+        /* La transformación translateX(-110px) se elimina para un centrado correcto */
     }
 
     /* Centramos la píldora (que es position: absolute) combinando su propio centrado con el ajuste */
     #daily-update-pill {
-        transform: translateX(calc(-50% - 110px));
+        /* Se elimina el ajuste (-110px) para centrarla correctamente */
+        transform: translateX(-50%);
     }
     #daily-update-pill:hover {
         /* Combinamos el hover con la nueva transformación de centrado */
-        transform: translateX(calc(-50% - 110px)) scale(1.03);
+        transform: translateX(-50%) scale(1.03);
     }
 }
 /* === FIN: AJUSTE DE CENTRADO === */
 @media (min-width: 1024px) {
     /* Ajuste del cuerpo para dejar espacio a la barra lateral (con transición) */
-    body {
-        padding-left: 220px;
-        transition: padding-left 0.4s var(--ease-out-quint);
-    }
+body {
+    transition: padding-left 0.4s var(--ease-out-quint);
+}
 
     /* Posiciona los contenedores principales a la derecha de la barra (con transición) */
     #app-container,
@@ -2747,22 +2756,25 @@ label[for="date-input"] {
         transition: width 0.4s var(--ease-out-quint), left 0.4s var(--ease-out-quint);
     }
 
-    /* Transforma la barra inferior en una barra lateral izquierda más ancha */
-    #bottom-nav-bar {
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: auto;
-        width: 220px;
-        height: 100%;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-        gap: 1rem;
-        border-top: none;
-        border-right: 1px solid #30363d;
-    }
+/* Transforma la barra inferior en una barra lateral izquierda más ancha */
+#bottom-nav-bar {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 220px;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    gap: 1rem;
+    border-top: none;
+    border-right: 1px solid #30363d;
+    background-color: rgba(22, 27, 34, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
 
     /* Oculta la barra lateral cuando la vista de mapa está activa */
     body.map-active #bottom-nav-bar {
@@ -2770,9 +2782,8 @@ label[for="date-input"] {
     }
     
     /* Expande el contenido principal cuando la barra se oculta */
-    body.map-active {
-        padding-left: 0;
-    }
+body.map-active {
+}
     body.map-active #app-container,
     body.map-active .screen {
         width: 100%;
