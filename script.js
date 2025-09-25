@@ -1137,11 +1137,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.playSound('uiClick', 'D4');
                 this.navigation.go('info-screen-moon', { hideBackButton: true });
             });
-            elements.navBtnMenu.addEventListener('click', () => {
-                this.playSound('uiClick', 'E4');
-                this.navigation.go('menu-screen', { hideBackButton: true });
-            });
+elements.navBtnMenu.addEventListener('click', () => {
+                        this.playSound('uiClick', 'E4');
+                        this.navigation.go('menu-screen', { hideBackButton: true });
+                    });
 			// --- FIN: Lógica para la barra de navegación inferior ---
+
+			// --- INICIO: Corrección para el estado "activo" persistente de los botones ---
+			function handleInteractionStart(event) {
+				// Se busca el elemento interactivo más cercano al punto del evento
+				const target = event.target.closest('.btn, .menu-list-item, .nav-item, .satellite-nav-btn, .modal-satellite-card, .pass-card-clickable, .satellite-entry-clickable');
+				if (target) {
+					target.classList.add('is-pressed');
+				}
+			}
+
+			function handleInteractionEnd() {
+				// Elimina la clase 'is-pressed' de CUALQUIER elemento que la tenga.
+				// Esto asegura que si el usuario arrastra el dedo/mouse fuera, el estado se limpie.
+				document.querySelectorAll('.is-pressed').forEach(el => {
+					el.classList.remove('is-pressed');
+				});
+			}
+
+			// Eventos para el INICIO de la interacción (táctil o con mouse)
+			document.addEventListener('touchstart', handleInteractionStart, { passive: true });
+			document.addEventListener('mousedown', handleInteractionStart);
+
+			// Eventos para el FIN de la interacción (cubre todos los casos posibles)
+			document.addEventListener('touchend', handleInteractionEnd);
+			document.addEventListener('mouseup', handleInteractionEnd);
+			document.addEventListener('mouseleave', handleInteractionEnd); // Si el mouse sale del documento
+			document.addEventListener('touchcancel', handleInteractionEnd); // Si la interacción táctil se cancela por el sistema
+			// --- FIN: Corrección para el estado "activo" persistente de los botones ---
 		},
 		openMapAndTrackDefault() {
 			this.playSound('uiClick', 'C4');

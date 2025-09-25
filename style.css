@@ -190,7 +190,7 @@ body {
     font-size: 1rem;
     will-change: transform, box-shadow;
 }
-.btn:active {
+.btn.is-pressed {
     transform: translateY(0px) scale(0.97) !important;
     transition: transform 0.1s ease;
 }
@@ -202,6 +202,22 @@ body {
     transform: none !important;
     border-color: #30363d !important;
 }
+
+/* --- INICIO: Estilo para estado presionado (controlado por JS) --- */
+.menu-list-item.is-pressed {
+    transform: translateY(0px) scale(0.97) !important;
+    transition: transform 0.1s ease;
+}
+
+.nav-item.is-pressed,
+.satellite-nav-btn.is-pressed,
+.modal-satellite-card.is-pressed,
+.pass-card-clickable.is-pressed,
+.satellite-entry-clickable.is-pressed {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+}
+/* --- FIN: Estilo para estado presionado --- */
 .btn-primary {
     background-color: var(--color-primary);
     color: white;
@@ -801,8 +817,8 @@ label[for="date-input"], label[for="time-input"] {
 }
 
 .start-logo {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     filter: drop-shadow(0 0 15px var(--color-secondary));
 }
 .start-logo .orbit {
@@ -824,9 +840,9 @@ label[for="date-input"], label[for="time-input"] {
     to { transform: rotate(360deg) translateX(40px) rotate(-360deg); }
 }
 
-/* Ajuste para aumentar el espacio entre el logo y los botones de inicio */
+/* Ajuste del espacio entre el logo y los botones de inicio */
 #start-screen .mt-12 {
-    margin-top: 4.5rem; /* 72px, aumentado desde los 48px originales (mt-12 de Tailwind) */
+    margin-top: 3.5rem; /* 56px, valor intermedio */
 }
 
 /* Ajuste para agrandar el título y subtítulo */
@@ -856,24 +872,27 @@ label[for="date-input"], label[for="time-input"] {
     inset: 0;
     z-index: 0;
     
-    /* Múltiples capas de fondo para crear un efecto de paralaje sutil */
+    /* Múltiples capas con tamaños y posiciones variadas para mayor aleatoriedad */
     background-image: 
-        radial-gradient(1px 1px at 20px 30px, white, rgba(255,255,255,0)),
-        radial-gradient(1px 1px at 80px 80px, #ddd, rgba(255,255,255,0)),
-        radial-gradient(1.5px 1.5px at 150px 100px, white, rgba(255,255,255,0)),
-        radial-gradient(2px 2px at 220px 180px, #ccc, rgba(255,255,255,0));
+        radial-gradient(1.5px 1.5px at 50px 100px, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 220px 80px, #ddd, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 10px 230px, #fff, rgba(255,255,255,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #eee, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 170px 180px, #ddd, rgba(255,255,255,0)),
+        radial-gradient(2px 2px at 300px 300px, #fff, rgba(255,255,255,0));
     background-repeat: repeat;
-    background-size: 250px 250px, 320px 320px, 400px 400px, 500px 500px;
+    background-size: 353px 353px, 401px 401px, 241px 241px, 503px 503px, 293px 293px, 607px 607px;
     
     animation: move-stars 300s linear infinite;
 }
 
 @keyframes move-stars {
     from {
-        transform: translate(0, 0);
+        background-position: 0 0;
     }
     to {
-        transform: translate(-1000px, -500px);
+        /* Usamos un valor grande que es múltiplo de los tamaños de las estrellas para un bucle perfecto */
+        background-position: -10000px 5000px;
     }
 }
 
@@ -895,24 +914,27 @@ label[for="date-input"], label[for="time-input"] {
     inset: 0;
     z-index: 0;
     
-    /* Múltiples capas de fondo para crear un efecto de paralaje sutil */
+    /* Múltiples capas con tamaños y posiciones variadas para mayor aleatoriedad */
     background-image: 
-        radial-gradient(1px 1px at 20px 30px, white, rgba(255,255,255,0)),
-        radial-gradient(1px 1px at 80px 80px, #ddd, rgba(255,255,255,0)),
-        radial-gradient(1.5px 1.5px at 150px 100px, white, rgba(255,255,255,0)),
-        radial-gradient(2px 2px at 220px 180px, #ccc, rgba(255,255,255,0));
+        radial-gradient(1.5px 1.5px at 50px 100px, white, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 220px 80px, #ddd, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 10px 230px, #fff, rgba(255,255,255,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #eee, rgba(255,255,255,0)),
+        radial-gradient(1px 1px at 170px 180px, #ddd, rgba(255,255,255,0)),
+        radial-gradient(2px 2px at 300px 300px, #fff, rgba(255,255,255,0));
     background-repeat: repeat;
-    background-size: 250px 250px, 320px 320px, 400px 400px, 500px 500px;
+    background-size: 353px 353px, 401px 401px, 241px 241px, 503px 503px, 293px 293px, 607px 607px;
     
     animation: move-stars 300s linear infinite;
 }
 
 @keyframes move-stars {
     from {
-        transform: translate(0, 0);
+        background-position: 0 0;
     }
     to {
-        transform: translate(-1000px, -500px);
+        /* Usamos un valor grande que es múltiplo de los tamaños de las estrellas para un bucle perfecto */
+        background-position: -10000px 5000px;
     }
 }
 
@@ -1287,6 +1309,7 @@ body.time-controls-active #action-controls {
     ESTILOS ADAPTATIVOS PARA ESCRITORIO (1024px y superior)
     ========================================================================== */
 @media (min-width: 1024px) {
+
     #start-screen .flex.flex-col.items-center.justify-center {
         flex-direction: row;
         gap: 1.5rem;
@@ -2290,6 +2313,8 @@ label[for="date-input"] {
     transform: translateX(-50%) scale(1.03);
 }
 
+
+
 @keyframes pulse-inset {
     0% {
         inset: -2px;
@@ -2575,18 +2600,32 @@ label[for="date-input"] {
     bottom: 0;
     left: 0;
     right: 0;
-    height: calc(60px + env(safe-area-inset-bottom));
+    height: calc(80px + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
+    background-color: transparent;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 20px;
+    z-index: 1200;
+    transition: transform 0.4s var(--ease-out-quint);
+    overflow: hidden;
+}
+
+#bottom-nav-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150vw;
+    height: 80px;
     background-color: rgba(22, 27, 34, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid #30363d;
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    padding-top: 8px;
-    z-index: 1200;
-    transition: transform 0.4s var(--ease-out-quint);
+    border-radius: 50% 50% 0 0;
+    z-index: -1;
 }
 
 @media (min-width: 1024px) {
@@ -2603,6 +2642,14 @@ label[for="date-input"] {
         padding: 0;
         border-top: none;
         border-right: 1px solid #30363d;
+        background-color: rgba(22, 27, 34, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        overflow: visible;
+    }
+
+    #bottom-nav-bar::before {
+        display: none;
     }
 }
 
@@ -2667,6 +2714,24 @@ label[for="date-input"] {
 /* ========================================================================== 
    ESTILOS ADAPTATIVOS PARA LA BARRA DE NAVEGACIÓN (ESCRITORIO)
    ========================================================================== */
+
+/* === INICIO: AJUSTE DE CENTRADO PARA PANTALLA DE INICIO EN ESCRITORIO === */
+@media (min-width: 1024px) {
+    /* Mantenemos el ajuste para el bloque principal del logo y botones */
+    #start-screen .text-center {
+        transform: translateX(-110px);
+    }
+
+    /* Centramos la píldora (que es position: absolute) combinando su propio centrado con el ajuste */
+    #daily-update-pill {
+        transform: translateX(calc(-50% - 110px));
+    }
+    #daily-update-pill:hover {
+        /* Combinamos el hover con la nueva transformación de centrado */
+        transform: translateX(calc(-50% - 110px)) scale(1.03);
+    }
+}
+/* === FIN: AJUSTE DE CENTRADO === */
 @media (min-width: 1024px) {
     /* Ajuste del cuerpo para dejar espacio a la barra lateral (con transición) */
     body {
