@@ -54,3 +54,64 @@ const SATELLITES_CONFIG = {
     // Esta lista se cargará dinámicamente desde CelesTrak
     brightestSatellites: []
 };
+
+// Base de datos de eventos astronómicos anuales
+const EVENTS_DATA = {
+    meteorShowers: [
+        {
+            name_es: "Cuadrántidas",
+            desc_es: "Una de las lluvias más activas del año, ideal para el Hemisferio Norte.",
+            start_month: 1, start_day: 1, end_month: 1, end_day: 6,
+            hemisphere: 'N'
+        },
+        {
+            name_es: "Líridas",
+            desc_es: "Produce meteoros rápidos y brillantes, visibles en ambos hemisferios pero con preferencia por el norte.",
+            start_month: 4, start_day: 16, end_month: 4, end_day: 25,
+            hemisphere: 'Both'
+        },
+        {
+            name_es: "Eta Acuáridas",
+            desc_es: "Restos del cometa Halley. Ofrece un excelente espectáculo en el Hemisferio Sur.",
+            start_month: 4, start_day: 19, end_month: 5, end_day: 28,
+            hemisphere: 'S'
+        },
+        {
+            name_es: "Delta Acuáridas del Sur",
+            desc_es: "Perfecta para observadores del sur, esta lluvia ofrece meteoros débiles pero constantes.",
+            start_month: 7, start_day: 12, end_month: 8, end_day: 23,
+            hemisphere: 'S'
+        },
+        {
+            name_es: "Perseidas",
+            desc_es: "La lluvia de estrellas más popular del verano del Hemisferio Norte, famosa por sus brillantes bólidos.",
+            start_month: 7, start_day: 17, end_month: 8, end_day: 24,
+            hemisphere: 'N'
+        },
+        {
+            name_es: "Oriónidas",
+            desc_es: "Otra lluvia asociada al cometa Halley, visible desde ambos hemisferios con meteoros muy veloces.",
+            start_month: 10, start_day: 2, end_month: 11, end_day: 7,
+            hemisphere: 'Both'
+        },
+        {
+            name_es: "Leónidas",
+            desc_es: "Conocida por sus espectaculares tormentas de meteoros cada 33 años. Visible globalmente.",
+            start_month: 11, start_day: 6, end_month: 11, end_day: 30,
+            hemisphere: 'Both'
+        },
+        {
+            name_es: "Gemínidas",
+            desc_es: "Considerada la reina de las lluvias de estrellas, con meteoros multicolores y una alta actividad.",
+            start_month: 12, start_day: 4, end_month: 12, end_day: 17,
+            hemisphere: 'Both'
+        }
+    ],
+    comets: [
+        {
+            name_es: "Cometa C/2023 A3 (Tsuchinshan-ATLAS)",
+            desc_es: "Un cometa con el potencial de convertirse en un espectáculo a simple vista a finales de 2024.",
+            hemisphere: 'Both' // O especificar 'N' o 'S' si es el caso
+        }
+    ]
+};
