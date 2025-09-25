@@ -96,11 +96,63 @@
                     <h2 class="text-xl font-bold" data-lang-key="navEvents">Eventos</h2>
                 </div>
             </header>
-            <div class="flex-grow flex items-center justify-center text-center px-4">
-                <div>
-                    <i class="fa-solid fa-rocket text-5xl text-secondary mb-4"></i>
-                    <h3 class="text-2xl font-bold" data-lang-key="comingSoonTitle">Próximamente</h3>
-                    <p class="text-text-secondary mt-2" data-lang-key="comingSoonDesc">Estamos trabajando en esta sección.</p>
+
+            <div class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6 pb-8">
+                <div id="featured-events-container" class="relative hidden">
+                    <div id="featured-events-slider" class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+                        </div>
+                    <div id="slider-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2"></div>
+                </div>
+
+                <div class="event-section mt-6">
+                    <h3 class="event-section-title">Explorar</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="event-nav-button">
+                            <i class="fa-solid fa-solar-system"></i>
+                            <span>Eclipses</span>
+                        </button>
+                        <button class="event-nav-button">
+                            <i class="fa-solid fa-comet"></i>
+                            <span>Cometas</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="event-section mt-6">
+                    <h3 class="event-section-title">Próximos Pasos Visibles</h3>
+                    <div id="upcoming-passes-list" class="space-y-2">
+                        <div class="pass-card-event skeleton"></div>
+                        <div class="pass-card-event skeleton"></div>
+                        <div class="pass-card-event skeleton"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div class="event-section flex flex-col">
+                        <h3 class="event-section-title">Fase Lunar</h3>
+                        <div class="moon-card-event">
+                            <div class="moon-phase-visual-event">
+                                <div id="moon-phase-shadow-event" class="moon-phase-shadow-event"></div>
+                            </div>
+                            <div class="moon-info-event">
+                                <p class="font-bold text-lg" id="moon-phase-name-event">Creciente Iluminante</p>
+                                <p class="text-sm text-text-secondary" id="moon-illumination-event">75% Iluminada</p>
+                                <p class="text-xs text-warning mt-2" id="next-full-moon-event"><i class="fa-solid fa-circle mr-2"></i>Próxima Luna Llena: 15 de Oct.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="event-section flex flex-col">
+                        <h3 class="event-section-title">Lanzamientos</h3>
+                        <div class="launch-card-event">
+                            <i class="fa-solid fa-rocket launch-icon-event"></i>
+                            <div class="launch-info-event">
+                                <p id="launch-mission-name" class="font-bold text-lg">Buscando...</p>
+                                <p id="launch-status-text" class="text-sm text-text-secondary">Próximo lanzamiento</p>
+                                <p id="launch-date-text" class="text-xs text-secondary mt-2"><i class="fa-solid fa-calendar-alt mr-2"></i>--</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

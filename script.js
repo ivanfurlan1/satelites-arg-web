@@ -1690,10 +1690,6 @@ elements.navBtnMenu.addEventListener('click', () => {
 
                 App.prediction.stopPassCalculation();
 
-                if (screenId === 'best-passes-screen') {
-                    App.ui.showLoadingModal('calculatingBestPasses');
-                }
-
 				if (App.elements.hamburgerBtn) {
 					const isSocialModalVisible = App.elements.socialModal && App.elements.socialModal.classList.contains('is-visible');
 					App.elements.hamburgerBtn.classList.toggle('hidden', screenId !== 'start-screen' || isSocialModalVisible);
@@ -1757,6 +1753,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					else if (screenId === 'latest-starlinks-screen') { App.starlinks.showScreen(); }
 					else if (screenId === 'info-screen-settings') { App.settings.updateUI(); }
 					else if (screenId === 'info-screen-moon') { App.moon.showScreen(); }
+					else if (screenId === 'events-screen') { App.events.populateScreen(); }
 
 					// --- INICIO: Actualizar estado de la barra de navegación inferior ---
 					const navItems = App.elements.bottomNavBar.querySelectorAll('.nav-item');
@@ -1786,6 +1783,383 @@ elements.navBtnMenu.addEventListener('click', () => {
 				} else {
 					cleanupAndShowNext();
 				}
+			}
+		},
+		events: {
+			populateScreen() {
+				this._updateFeaturedEvents();
+				this._updateMoonCard();
+				this._updateUpcomingPasses();
+				this._updateLaunchCard();
+			},
+
+			_updateFeaturedEvents() {
+				const container = document.getElementById('featured-events-container');
+				const slider = document.getElementById('featured-events-slider');
+				const dotsContainer = document.getElementById('slider-dots');
+				if (!container || !slider || !dotsContainer) return;
+
+				const lat = App.state.observerCoords ? App.state.observerCoords[0] : 0;
+				const userHemisphere = lat < 0 ? 'S' : 'N';
+				const now = new Date();
+				const currentYear = now.getFullYear();
+
+				// 1. Obtener la próxima lluvia de estrellas
+				const visibleShowers = EVENTS_DATA.meteorShowers.filter(shower =>
+					shower.hemisphere === 'Both' || shower.hemisphere === userHemisphere
+				);
+				let upcomingShowers = [];
+				visibleShowers.forEach(shower => {
+					const startThisYear = new Date(currentYear, shower.start_month - 1, shower.start_day);
+					const endThisYear = new Date(currentYear, shower.end_month - 1, shower.end_day + 1);
+					if (endThisYear >= now) {
+						upcomingShowers.push({ ...shower, type: 'meteorShower', start: startThisYear, end: endThisYear });
+					}
+					const startNextYear = new Date(currentYear + 1, shower.start_month - 1, shower.start_day);
+					const endNextYear = new Date(currentYear + 1, shower.end_month - 1, shower.end_day + 1);
+					upcomingShowers.push({ ...shower, type: 'meteorShower', start: startNextYear, end: endNextYear });
+				});
+				upcomingShowers.sort((a, b) => a.start - b.start);
+				const nextShower = upcomingShowers.find(s => s.end >= now);
+
+				// 2. Obtener un cometa (el primero de la lista por ahora)
+				const nextComet = EVENTS_DATA.comets.length > 0 ? { ...EVENTS_DATA.comets[0], type: 'comet' } : null;
+
+				// 3. Juntar los eventos a mostrar
+				const featuredEvents = [];
+				if (nextShower) featuredEvents.push(nextShower);
+				if (nextComet) featuredEvents.push(nextComet);
+
+				slider.innerHTML = '';
+				dotsContainer.innerHTML = '';
+
+				if (featuredEvents.length === 0) {
+					container.classList.add('hidden');
+					return;
+				}
+
+				container.classList.remove('hidden');
+				featuredEvents.forEach((event, index) => {
+					const card = this._createFeaturedEventCard(event);
+					slider.appendChild(card);
+					
+					const dot = document.createElement('span');
+					dot.className = 'dot';
+					if (index === 0) dot.classList.add('active-dot');
+					dotsContainer.appendChild(dot);
+				});
+				
+				this._setupSliderObserver();
+			},
+
+			_createFeaturedEventCard(event) {
+				const card = document.createElement('div');
+				card.className = 'event-card-featured snap-center';
+				
+				const lang = App.settings.current.language;
+				let dateRangeHTML = '';
+				let imageSrc = '';
+
+				if (event.type === 'meteorShower') {
+					imageSrc = 'images/meteor-shower.jpg';
+					const dateOptions = { month: 'long', day: 'numeric' };
+					const startDate = new Intl.DateTimeFormat(lang === 'es' ? 'es-AR' : 'en-US', dateOptions).format(event.start);
+					const endDate = new Intl.DateTimeFormat(lang === 'es' ? 'es-AR' : 'en-US', dateOptions).format(new Date(event.end.getTime() - 86400000));
+					const dateText = lang === 'es' ? `Del ${startDate} al ${endDate}` : `From ${startDate} to ${endDate}`;
+					dateRangeHTML = `<p class="mt-2 font-bold text-xs text-secondary tracking-wider">${dateText}</p>`;
+				} else if (event.type === 'comet') {
+					imageSrc = 'images/comet.jpg';
+					// No se muestra rango de fecha para el cometa por ahora
+				}
+
+				card.innerHTML = `
+					<img src="${imageSrc}" alt="${event.name_es}" class="event-card-image">
+					<div class="event-card-overlay">
+						<h3 class="event-card-title">${event.name_es}</h3>
+						<p class="event-card-desc">${event.desc_es}</p>
+						${dateRangeHTML}
+					</div>
+				`;
+				return card;
+			},
+
+			_setupSliderObserver() {
+				const slider = document.getElementById('featured-events-slider');
+				const dots = document.querySelectorAll('#slider-dots .dot');
+				if (!slider || dots.length === 0) return;
+			
+				const observer = new IntersectionObserver((entries) => {
+					entries.forEach(entry => {
+						if (entry.isIntersecting) {
+							const index = Array.from(slider.children).indexOf(entry.target);
+							dots.forEach((dot, i) => dot.classList.toggle('active-dot', i === index));
+						}
+					});
+				}, { root: slider, threshold: 0.6 });
+			
+				slider.querySelectorAll('.event-card-featured').forEach(card => observer.observe(card));
+			},
+
+			async _updateLaunchCard() {
+				const missionNameEl = document.getElementById('launch-mission-name');
+				const statusTextEl = document.getElementById('launch-status-text');
+				const dateTextEl = document.getElementById('launch-date-text');
+				const cacheKey = 'satelitesarg_next_launch';
+				const cacheDuration = 6 * 60 * 60 * 1000; // 6 horas
+
+				try {
+					const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+					if (cachedData && (Date.now() - cachedData.timestamp < cacheDuration)) {
+						this._renderLaunchData(cachedData.data);
+						console.log("Próximo lanzamiento cargado desde caché.");
+						return;
+					}
+				} catch (e) {
+					console.error("Error al leer caché de lanzamientos:", e);
+				}
+
+				try {
+					const nowISO = new Date().toISOString();
+					const apiUrl = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
+					
+					const response = await fetch(apiUrl);
+					if (!response.ok) throw new Error(`API de lanzamientos respondió con estado ${response.status}`);
+					const data = await response.json();
+
+					if (data.results && data.results.length > 0) {
+						const launch = data.results[0];
+						const launchData = {
+							name: launch.name,
+							status: launch.status.name,
+							date: launch.net
+						};
+						
+						localStorage.setItem(cacheKey, JSON.stringify({
+							timestamp: Date.now(),
+							data: launchData
+						}));
+
+						this._renderLaunchData(launchData);
+					} else {
+						throw new Error("No se encontraron próximos lanzamientos de Starlink.");
+					}
+				} catch (error) {
+					console.error("Error al obtener datos de lanzamiento:", error);
+					missionNameEl.textContent = "Starlink";
+					statusTextEl.textContent = "Próximo lanzamiento";
+					dateTextEl.innerHTML = `<i class="fa-solid fa-calendar-alt mr-2"></i>No disponible`;
+				}
+			},
+
+			_renderLaunchData(launchData) {
+				const missionNameEl = document.getElementById('launch-mission-name');
+				const statusTextEl = document.getElementById('launch-status-text');
+				const dateTextEl = document.getElementById('launch-date-text');
+
+				missionNameEl.textContent = launchData.name;
+				statusTextEl.textContent = launchData.status;
+
+				const launchDate = new Date(launchData.date);
+				const lang = App.settings.current.language;
+				const formattedDate = new Intl.DateTimeFormat(lang === 'es' ? 'es-AR' : 'en-US', { 
+					month: 'long', 
+					day: 'numeric',
+					hour: '2-digit',
+					minute: '2-digit',
+					timeZone: App.state.observerTimeZone?.timeZone || 'UTC'
+				}).format(launchDate);
+
+				dateTextEl.innerHTML = `<i class="fa-solid fa-calendar-alt mr-2"></i>${formattedDate} hs`;
+			},
+
+			_updateMoonCard() {
+				const phaseNameEl = document.getElementById('moon-phase-name-event');
+				const illuminationEl = document.getElementById('moon-illumination-event');
+				const nextFullMoonEl = document.getElementById('next-full-moon-event');
+				const shadowEl = document.getElementById('moon-phase-shadow-event');
+
+				const now = new Date();
+				const moonInfo = SunCalc.getMoonIllumination(now);
+				const phase = moonInfo.phase;
+				const phaseName = App.moon.getPhaseName(phase);
+				const illumination = (moonInfo.fraction * 100).toFixed(0);
+
+				phaseNameEl.textContent = phaseName;
+				illuminationEl.textContent = `${illumination}% Iluminada`;
+
+				// Lógica para actualizar el ícono de la luna
+				const isSouthernHemisphere = App.state.observerCoords ? App.state.observerCoords[0] < 0 : false;
+				let translationPercent;
+				if (phase <= 0.5) {
+					const progress = phase / 0.5;
+					translationPercent = isSouthernHemisphere ? progress * 100 : progress * -100;
+				} else {
+					const progress = (phase - 0.5) / 0.5;
+					translationPercent = isSouthernHemisphere ? -100 + (progress * 100) : 100 - (progress * 100);
+				}
+				if (shadowEl) {
+					shadowEl.style.transform = `translateX(${translationPercent}%)`;
+				}
+
+				// Calcular próxima luna llena
+				let nextFullMoonDate = null;
+				let currentDate = new Date(now);
+				for (let i = 0; i < 35; i++) {
+					currentDate.setDate(currentDate.getDate() + 1);
+					const currentPhase = SunCalc.getMoonIllumination(currentDate).phase;
+					if (currentPhase >= 0.48 && currentPhase < 0.52) {
+						let bestDate = currentDate;
+						let minDiff = Math.abs(currentPhase - 0.5);
+						for (let h = -12; h <= 12; h++) {
+							const testDate = new Date(currentDate.getTime() + h * 60 * 60 * 1000);
+							const testPhase = SunCalc.getMoonIllumination(testDate).phase;
+							const diff = Math.abs(testPhase - 0.5);
+							if (diff < minDiff) {
+								minDiff = diff;
+								bestDate = testDate;
+							}
+						}
+						nextFullMoonDate = bestDate;
+						break;
+					}
+				}
+
+				if (nextFullMoonDate) {
+					const lang = App.settings.current.language;
+					const formattedDate = new Intl.DateTimeFormat(lang === 'es' ? 'es-AR' : 'en-US', { month: 'long', day: 'numeric' }).format(nextFullMoonDate);
+					nextFullMoonEl.innerHTML = `<i class="fa-solid fa-circle mr-2"></i>Próxima Luna Llena: ${formattedDate}`;
+				}
+			},
+
+			_updateUpcomingPasses() {
+				const container = document.getElementById('upcoming-passes-list');
+				if (!App.state.observerCoords) {
+					container.innerHTML = `<p class="text-text-secondary text-center p-4">Ubicación no definida.</p>`;
+					return;
+				}
+
+				const cacheKey = `events_passes_cache_${App.state.observerCoords[0]}_${App.state.observerCoords[1]}`;
+				const cacheDuration = 24 * 60 * 60 * 1000; // 24 horas
+
+				// Intentar cargar desde caché
+				try {
+					const cachedData = JSON.parse(localStorage.getItem(cacheKey));
+					if (cachedData && (Date.now() - cachedData.timestamp < cacheDuration)) {
+						const now = new Date();
+						const upcomingPasses = cachedData.passes
+							.map(p => ({ ...p, start: new Date(p.start), end: new Date(p.end) }))
+							.filter(p => p.end > now)
+							.slice(0, 3);
+						
+						container.innerHTML = '';
+						if (upcomingPasses.length > 0) {
+							upcomingPasses.forEach(pass => {
+								const card = this._createPassCard(pass);
+								container.appendChild(card);
+							});
+						} else {
+							container.innerHTML = `<p class="text-text-secondary text-center p-4">No se encontraron próximos pasos visibles.</p>`;
+						}
+						console.log("Pasos de eventos cargados desde caché.");
+						return; // Salimos de la función si usamos la caché
+					}
+				} catch (e) {
+					console.error("Error al leer caché de pasos de eventos:", e);
+				}
+				
+				// 1. Mostrar los skeletons si no hay caché válido.
+				container.innerHTML = `
+					<div class="pass-card-event skeleton"></div>
+					<div class="pass-card-event skeleton"></div>
+					<div class="pass-card-event skeleton"></div>
+				`;
+
+				const favorites = App.mySatellites.loadFromStorage();
+				const populars = Object.values(App.config.knownSatellites).filter(s => s.tle);
+				const satMap = new Map();
+				[...favorites, ...populars].forEach(sat => {
+					if(sat.tle) {
+						const tleId = getTleId(sat.tle);
+						if (!satMap.has(tleId)) satMap.set(tleId, sat);
+					}
+				});
+				const satsToCalculate = Array.from(satMap.values());
+				const allPasses = [];
+				const now = new Date();
+				const MAX_DAYS_TO_CHECK = 7;
+
+				const processQueue = (satIndex = 0, dayIndex = 0) => {
+					if (satIndex >= satsToCalculate.length) {
+						allPasses.sort((a, b) => a.start - b.start);
+						
+						// Guardar en caché al finalizar
+						localStorage.setItem(cacheKey, JSON.stringify({
+							timestamp: Date.now(),
+							passes: allPasses
+						}));
+
+						const nextThreePasses = allPasses.slice(0, 3);
+						container.innerHTML = '';
+						if (nextThreePasses.length > 0) {
+							nextThreePasses.forEach(pass => container.appendChild(this._createPassCard(pass)));
+						} else {
+							container.innerHTML = `<p class="text-text-secondary text-center p-4">No se encontraron próximos pasos visibles.</p>`;
+						}
+						return;
+					}
+
+					const sat = satsToCalculate[satIndex];
+					const startDate = new Date();
+					startDate.setHours(0, 0, 0, 0);
+					startDate.setDate(startDate.getDate() + dayIndex);
+
+					try {
+						const parsed = App.satellites.parseTLE(sat.tle);
+						if (parsed.length > 0) {
+							const satrec = satellite.twoline2satrec(parsed[0].line1, parsed[0].line2);
+							const passesForDay = App.prediction.calculateVisiblePasses({ satrec }, App.state.observerCoords, { days: 1, startDate: startDate });
+							const validPasses = passesForDay.filter(p => p.end > now).map(p => ({ ...p, satName: sat.name, tle: sat.tle }));
+							allPasses.push(...validPasses);
+						}
+					} catch (e) { /* Ignorar TLEs inválidos */ }
+
+					let nextSatIndex = satIndex;
+					let nextDayIndex = dayIndex + 1;
+					if (nextDayIndex >= MAX_DAYS_TO_CHECK) {
+						nextSatIndex++;
+						nextDayIndex = 0;
+					}
+
+					setTimeout(() => processQueue(nextSatIndex, nextDayIndex), 0);
+				};
+
+				setTimeout(() => processQueue(), 50);
+			},
+
+			_createPassCard(pass) {
+				const card = document.createElement('div');
+				card.className = 'pass-card-event';
+				const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+				card.innerHTML = `
+					<div class="flex-grow min-w-0">
+						<p class="satellite-name truncate">${pass.satName}</p>
+						<p class="pass-time">${App.time.formatCityTime(pass.start, timeOptions)}</p>
+					</div>
+					<div class="pass-elevation text-lg">
+						${pass.maxElevation.toFixed(0)}°
+					</div>
+				`;
+
+				card.addEventListener('click', () => {
+					App.playSound('success', 'A4');
+					App.state.pendingPassJumpTimestamp = pass.start.getTime();
+					localStorage.setItem(App.config.lastSatStorageKey, pass.tle);
+					App.elements.tleInput.value = pass.tle;
+					App.satellites.handleTleLoad(true);
+					App.navigation.go('app-container');
+				});
+				return card;
 			}
 		},
 		ui: {
@@ -4128,7 +4502,7 @@ elements.navBtnMenu.addEventListener('click', () => {
                 });
             },
 			showBestPasses() {
-                const { bestPassesList, viewMoreContainerBestPasses } = App.elements;
+                const { bestPassesList, viewMoreContainerBestPasses, showPreviousPassesBtnNew } = App.elements;
 
                 App.state.previousBestPassesLoaded = false;
                 
@@ -4147,15 +4521,24 @@ elements.navBtnMenu.addEventListener('click', () => {
                     satsToCalculate = App.mySatellites.loadFromStorage();
                 }
                 
-                App.ui.showLoadingModal('calculatingBestPasses', { count: satsToCalculate.length });
-
                 if (!App.state.observerCoords) {
                     bestPassesList.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="setLocationForBestPasses">${App.language.getTranslation('setLocationForBestPasses')}</p>`;
-                    showPreviousContainer.classList.add('hidden');
+                    showPreviousPassesBtnNew.classList.add('hidden');
                     viewMoreContainerBestPasses.classList.add('hidden');
                     App.ui.hideLoadingModal();
                     return;
                 }
+
+                if (satsToCalculate.length === 0) {
+                    const key = source === 'favorites' ? 'noFavoritesForBestPasses' : 'noSatsLoaded';
+                    bestPassesList.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="${key}">${App.language.getTranslation(key)}</p>`;
+                    showPreviousPassesBtnNew.classList.add('hidden');
+                    viewMoreContainerBestPasses.classList.add('hidden');
+                    App.ui.hideLoadingModal();
+                    return;
+                }
+
+                App.ui.showLoadingModal('calculatingBestPasses', { count: satsToCalculate.length });
                 
                 const cacheKey = `best_passes_cache_${source}_${App.state.observerCoords[0]}_${App.state.observerCoords[1]}`;
                 try {
@@ -4180,15 +4563,6 @@ elements.navBtnMenu.addEventListener('click', () => {
                     sessionStorage.removeItem(cacheKey);
                 }
 
-                if (satsToCalculate.length === 0) {
-                    const key = source === 'favorites' ? 'noFavoritesForBestPasses' : 'noSatsLoaded';
-                    bestPassesList.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="${key}">${App.language.getTranslation(key)}</p>`;
-                    showPreviousBestPassesBtn.classList.add('hidden');
-                    viewMoreContainerBestPasses.classList.add('hidden');
-                    App.ui.hideLoadingModal();
-                    return;
-                }
-                
                 setTimeout(() => {
                     this.startPassCalculation(satsToCalculate, 'bestPasses');
                 }, 0);

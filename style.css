@@ -1347,7 +1347,8 @@ body.map-active #action-controls {
 #best-passes-screen .overflow-y-auto,
 #my-satellites-screen .overflow-y-auto,
 #latest-starlinks-screen .overflow-y-auto,
-#brightest-satellites-screen .overflow-y-auto {
+#brightest-satellites-screen .overflow-y-auto,
+#events-screen .overflow-y-auto {
     padding-top: 1rem;
     padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom));
 }
@@ -2837,6 +2838,187 @@ label[for="date-input"] {
 
 .nav-item.active {
     color: var(--color-secondary);
+}
+
+/* ========================================================================== 
+   NUEVOS ESTILOS PARA LA PANTALLA DE EVENTOS
+   ========================================================================== */
+.event-section {
+    margin-top: 1.75rem;
+}
+
+.event-section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 0.25rem 0.75rem;
+    border-bottom: 1px solid #30363d;
+    margin-bottom: 1rem;
+}
+
+/* Slider de Eventos Destacados */
+#featured-events-slider {
+    padding-bottom: 1rem; /* Espacio para que la sombra no se corte */
+}
+.event-card-featured {
+    flex: 0 0 85%;
+    max-width: 85%;
+    aspect-ratio: 16 / 9;
+    margin-right: 1rem;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    transition: transform 0.3s var(--ease-out-quint);
+}
+.event-card-featured:first-child {
+    margin-left: 1rem;
+}
+.event-card-featured:hover {
+    transform: translateY(-4px);
+}
+
+.event-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s var(--ease-out-quint);
+}
+.event-card-featured:hover .event-card-image {
+    transform: scale(1.05);
+}
+
+.event-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13, 17, 23, 0.9) 20%, rgba(13, 17, 23, 0.5) 50%, transparent 100%);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.event-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+}
+.event-card-desc {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    margin-top: 0.25rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+}
+
+#slider-dots .dot {
+    width: 7px;
+    height: 7px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-text-secondary);
+}
+#slider-dots .dot.active-dot {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Tarjeta de Pasos de Satélites */
+.pass-card-event {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    border-left: 3px solid var(--color-secondary);
+}
+.pass-card-event .satellite-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+.pass-card-event .pass-time {
+    font-size: 0.85rem;
+    font-family: monospace;
+    color: var(--color-text-secondary);
+}
+.pass-card-event .pass-elevation {
+    font-weight: 700;
+    color: var(--color-warning);
+    margin-left: auto;
+}
+.pass-card-event.skeleton {
+    height: 60px;
+    background-color: var(--color-surface);
+    animation: pulse-bg 2s infinite;
+}
+@keyframes pulse-bg {
+    50% { background-color: #1a2029; }
+}
+
+/* Tarjeta de Luna */
+.moon-card-event {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    height: 100%;
+}
+.moon-phase-visual-event {
+    width: 60px; height: 60px; border-radius: 50%; background-color: #f0f0f0;
+    position: relative; overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 0 10px rgba(240, 240, 240, 0.4) inset, 0 0 5px rgba(240, 240, 240, 0.5);
+}
+.moon-phase-shadow-event {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%; background-color: var(--color-background);
+}
+
+/* Tarjeta de Lanzamientos */
+.launch-card-event {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem;
+    background: radial-gradient(ellipse at 100% 0%, rgba(88, 166, 255, 0.08), transparent 70%), var(--color-surface);
+    border-radius: 8px;
+    height: 100%;
+}
+.launch-icon-event {
+    font-size: 2.5rem;
+    color: var(--color-secondary);
+    text-shadow: 0 0 15px var(--color-secondary);
+}
+
+/* Botones de Navegación de Eventos */
+.event-nav-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1rem;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    color: var(--color-text-primary);
+    font-weight: 500;
+    transition: all 0.2s var(--ease-out-quint);
+    border: 1px solid transparent;
+}
+.event-nav-button:hover {
+    transform: translateY(-3px);
+    border-color: #30363d;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    color: var(--color-secondary);
+}
+.event-nav-button i {
+    font-size: 1.5rem;
 }
 
 /* ========================================================================== 
