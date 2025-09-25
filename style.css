@@ -87,6 +87,13 @@ body {
     left: 0;
     will-change: transform, opacity;
     box-sizing: border-box; /* Añadido para un cálculo de padding consistente */
+    background: 
+        /* Luz sutil azulada desde la esquina superior izquierda (MODIFICADO) */
+        radial-gradient(ellipse farthest-corner at 0% 40%, rgba(88, 166, 255, 0.03) 0%, transparent 70%),
+        /* Luz sutil blanquecina desde la esquina inferior derecha (MODIFICADO) */
+        radial-gradient(ellipse farthest-corner at 100% 100%, rgba(201, 209, 217, 0.008) 0%, transparent 60%),
+        /* Color de fondo base */
+        var(--color-background);
 }
 
 @media (min-width: 1024px) {
@@ -1332,10 +1339,7 @@ body.map-active #action-controls {
 }
 
 #best-passes-location-feedback {
-    height: 1rem; /* h-4 */
-    margin-top: 0.25rem; /* mt-1 */
-    opacity: 1;
-    overflow: visible;
+    display: none;
 }
 
 .info-screen .overflow-y-auto,
@@ -2289,6 +2293,15 @@ label[for="date-input"] {
     transform: rotate(180deg);
 }
 
+#show-previous-passes-btn-new {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    width: 34px;
+    padding: 0;
+}
+
 /* ========================================================================== 
    ESTILOS PARA EL MODAL DE CARGA
    ========================================================================== */
@@ -2378,11 +2391,6 @@ label[for="date-input"] {
 
 
 /* --- INICIO: Estilos para el botón de "Ver Pasos Previos" --- */
-#show-previous-container {
-    transition: transform 0.3s var(--ease-out-quint), opacity 0.3s var(--ease-out-quint);
-    will-change: transform, opacity;
-}
-
 .view-more-link {
     color: var(--color-secondary);
     font-weight: 700;

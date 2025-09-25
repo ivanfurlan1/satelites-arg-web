@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.time.updateResetTimeButtonState(); // Initialize button state
 		},
 		cacheDOMElements() {
-			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'show-previous-best-passes-btn', 'show-previous-container', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off' ];
+			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', /* *** NUEVO: IDs para los botones "Ver más" *** */ 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off', 'show-previous-passes-btn-new' ];
 			ids.forEach(id => { const camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase()); this.elements[camelCaseId] = document.getElementById(id); });
 			if (this.elements.pageIndicatorDots) {
 				this.elements.pageIndicatorDots.dots = this.elements.pageIndicatorDots.querySelectorAll('.dot');
@@ -854,80 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			elements.toggleVisibilityBandsBtn.addEventListener('click', () => this.prediction.toggleVisibilityBands());
 			
-			elements.showPreviousBestPassesBtn.addEventListener('click', () => this.prediction.showPreviousBestPasses());
-
-            // --- INICIO: Lógica para mostrar/ocultar botón de pasos previos ---
-            const { bestPassesScroller, showPreviousContainer } = elements;
-            if (bestPassesScroller && showPreviousContainer) {
-                let touchStartY = 0;
-                let isDragging = false;
-                let atTopSince = 0; // 0 means not at top, otherwise it's a timestamp
-                const requiredPersistence = 150; // ms user must be at top before next scroll up triggers the button
-
-                const showButton = () => {
-                    if (App.state.previousBestPassesLoaded || !showPreviousContainer.classList.contains('hidden')) return;
-                    showPreviousContainer.classList.remove('hidden');
-                    void showPreviousContainer.offsetWidth; // Force reflow
-                    showPreviousContainer.style.transform = 'translateY(0)';
-                    showPreviousContainer.style.opacity = '1';
-                };
-
-                const hideButton = () => {
-                    if (showPreviousContainer.classList.contains('hidden')) return;
-                    showPreviousContainer.style.transform = 'translateY(-100%)';
-                    showPreviousContainer.style.opacity = '0';
-                    setTimeout(() => {
-                        showPreviousContainer.classList.add('hidden');
-                    }, 300);
-                };
-
-                bestPassesScroller.addEventListener('wheel', (e) => {
-                    if (e.deltaY < -10 && bestPassesScroller.scrollTop === 0) { // Scrolling up at the top
-                        if (atTopSince > 0 && (Date.now() - atTopSince > requiredPersistence)) {
-                            showButton();
-                            atTopSince = 0; // Reset after showing
-                        }
-                    }
-                }, { passive: true });
-                
-                bestPassesScroller.addEventListener('touchstart', (e) => {
-                    touchStartY = e.touches[0].clientY;
-                    isDragging = true;
-                }, { passive: true });
-                
-                bestPassesScroller.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    const currentY = e.touches[0].clientY;
-                    if (currentY > touchStartY + 10 && bestPassesScroller.scrollTop === 0) { // Swiping down (scrolling up) at the top
-                         if (atTopSince > 0 && (Date.now() - atTopSince > requiredPersistence)) {
-                            showButton();
-                            atTopSince = 0; // Reset after showing
-                        }
-                    }
-                }, { passive: true });
-                
-                bestPassesScroller.addEventListener('touchend', () => {
-                    isDragging = false;
-                    // Reset on touch end to require a new "rest" at the top for the next gesture
-                    if (bestPassesScroller.scrollTop === 0) {
-                        atTopSince = Date.now();
-                    } else {
-                        atTopSince = 0;
-                    }
-                });
-
-                bestPassesScroller.addEventListener('scroll', () => {
-                    if (bestPassesScroller.scrollTop === 0) {
-                        if (atTopSince === 0) { // Just arrived at top
-                            atTopSince = Date.now();
-                        }
-                    } else {
-                        atTopSince = 0; // Not at top
-                        hideButton();
-                    }
-                });
-            }
-            // --- FIN: Lógica para mostrar/ocultar botón de pasos previos ---
+			elements.showPreviousPassesBtnNew.addEventListener('click', () => this.prediction.showPreviousBestPasses());
 
 			elements.knownSatellitesList.addEventListener('click', (e) => {
 				const satCard = e.target.closest('.satellite-entry');
@@ -4201,13 +4128,8 @@ elements.navBtnMenu.addEventListener('click', () => {
                 });
             },
 			showBestPasses() {
-                const { bestPassesList, showPreviousBestPassesBtn, viewMoreContainerBestPasses, showPreviousContainer } = App.elements;
-                showPreviousContainer.classList.add('hidden');
-                showPreviousContainer.style.transform = 'translateY(-100%)';
-                showPreviousContainer.style.opacity = '0';
+                const { bestPassesList, viewMoreContainerBestPasses } = App.elements;
 
-                showPreviousBestPassesBtn.disabled = false;
-                showPreviousBestPassesBtn.textContent = App.language.getTranslation('showPreviousPasses');
                 App.state.previousBestPassesLoaded = false;
                 
                 const source = App.state.currentBestPassesSource;
@@ -4272,17 +4194,11 @@ elements.navBtnMenu.addEventListener('click', () => {
                 }, 0);
             },
 			async showPreviousBestPasses() {
-				const { showPreviousBestPassesBtn, bestPassesList, showPreviousContainer } = App.elements;
+				const { bestPassesList } = App.elements;
 				if (App.state.previousBestPassesLoaded) return;
 
-				showPreviousBestPassesBtn.disabled = true;
-				showPreviousBestPassesBtn.textContent = App.language.getTranslation('calculating');
 				App.playSound('uiClick', 'C4');
 				App.ui.showLoadingModal();
-
-				showPreviousContainer.style.transform = 'translateY(-100%)';
-				showPreviousContainer.style.opacity = '0';
-				setTimeout(() => showPreviousContainer.classList.add('hidden'), 300);
 
 				setTimeout(async () => {
 					const source = App.state.currentBestPassesSource;
@@ -4320,7 +4236,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 				}, 50);
 			},
 			renderFilteredPasses() {
-                const { bestPassesList, showPreviousBestPassesBtn, viewMoreContainerBestPasses } = App.elements;
+                const { bestPassesList, viewMoreContainerBestPasses } = App.elements;
                 const now = new Date();
                 
                 let passesToConsider = App.state.passCalculation.allFoundPasses.filter(p => p.maxElevation > 50);
@@ -4334,7 +4250,6 @@ elements.navBtnMenu.addEventListener('click', () => {
 
                 if (passesToRender.length === 0 && !App.state.passCalculation.inProgress) {
                     bestPassesList.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="noPassesForFilter">${App.language.getTranslation('noPassesForFilter')}</p>`;
-                    showPreviousBestPassesBtn.classList.add('hidden');
                     viewMoreContainerBestPasses.classList.add('hidden');
                     App.ui.hideLoadingModal();
                     return;

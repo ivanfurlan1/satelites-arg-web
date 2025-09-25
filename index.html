@@ -461,8 +461,10 @@
                    </button>
                    <h2 class="text-xl font-bold" data-lang-key="bestPassesTitle">Mejores Pasos</h2>
                 </div>
-                
-                <div class="mt-6 flex flex-col items-center gap-4">
+            </header>
+
+            <div id="best-passes-scroller" class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
+                <div class="mt-4 flex flex-col items-center gap-4">
                     <div class="w-full max-w-sm mx-auto">
                         <div class="search-pill">
                             <i class="fa-solid fa-location-crosshairs search-pill-icon"></i>
@@ -487,7 +489,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div id="best-passes-filter-container" class="relative flex justify-center">
                             <div class="filter-dropdown">
                                 <button id="best-passes-filter-btn" class="filter-pill-btn">
@@ -501,17 +502,12 @@
                                 </div>
                             </div>
                         </div>
+                        <button id="show-previous-passes-btn-new" class="filter-pill-btn" data-lang-key="showPreviousPasses" title="Ver pasos previos">
+                            <i class="fa-solid fa-backward-step"></i>
+                        </button>
                     </div>
                 </div>
-            </header>
-
-            <div id="best-passes-scroller" class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6">
-                <div id="show-previous-container" class="text-center py-2">
-                    <button id="show-previous-best-passes-btn" class="view-more-link" data-lang-key="showPreviousPasses">
-                        Ver pasos previos
-                    </button>
-                </div>
-                <div id="best-passes-list" class="space-y-2">
+                <div id="best-passes-list" class="space-y-2 mt-4">
                 </div>
                 <div id="view-more-container-best-passes" class="text-center py-4 hidden">
                     <button id="view-more-btn-best-passes" class="view-more-link" data-lang-key="viewMoreButton">Ver más</button>
