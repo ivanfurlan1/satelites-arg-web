@@ -1981,7 +1981,8 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 				try {
 					const nowISO = new Date().toISOString();
-					const apiUrl = `https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
+					const targetUrl = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
+					const apiUrl = `https://api.codetabs.com/v1/proxy/?quest=${targetUrl}`;
 					
 					const response = await fetch(apiUrl);
 					if (!response.ok) throw new Error(`API de lanzamientos respondió con estado ${response.status}`);
@@ -2252,8 +2253,11 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 				try {
 					const nowISO = new Date().toISOString();
-					const upcomingUrl = `https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
-					const previousUrl = 'https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
+					const upcomingTarget = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
+					const upcomingUrl = `https://api.codetabs.com/v1/proxy/?quest=${upcomingTarget}`;
+					
+					const previousTarget = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
+					const previousUrl = `https://api.codetabs.com/v1/proxy/?quest=${previousTarget}`;
 
 					const [upcomingResponse, previousResponse] = await Promise.all([
 						fetch(upcomingUrl),
@@ -2322,11 +2326,34 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 				container.innerHTML = '';
 				const fragment = document.createDocumentFragment();
+				const now = new Date();
+
+				// Encontrar el índice del primer lanzamiento futuro
+				const firstUpcomingIndex = launches.findIndex(l => new Date(l.net) >= now);
+
+				const pastLaunches = firstUpcomingIndex === -1 ? launches : launches.slice(0, firstUpcomingIndex);
+				const upcomingLaunches = firstUpcomingIndex === -1 ? [] : launches.slice(firstUpcomingIndex);
 				
-				launches.forEach(launch => {
-					const card = this._createLaunchCard(launch);
-					fragment.appendChild(card);
-				});
+				const createSection = (titleKey, launchList, isFirstSection) => {
+					if (launchList.length > 0) {
+						const header = document.createElement('h3');
+						header.className = 'launch-section-header';
+						if (isFirstSection) {
+							header.style.marginTop = '0';
+						}
+						header.setAttribute('data-lang-key', titleKey);
+						header.textContent = App.language.getTranslation(titleKey);
+						fragment.appendChild(header);
+
+						launchList.forEach(launch => {
+							const card = this._createLaunchCard(launch);
+							fragment.appendChild(card);
+						});
+					}
+				};
+				
+				createSection('launchesLaunched', pastLaunches, true);
+				createSection('launchesUpcoming', upcomingLaunches, pastLaunches.length === 0);
 
 				container.appendChild(fragment);
 				App.language.set(App.settings.current.language);

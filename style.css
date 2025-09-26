@@ -1165,6 +1165,17 @@ body.map-active #action-controls {
     margin-bottom: 0.5rem;
 }
 
+.launch-section-header {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0 0.25rem 0.75rem;
+    margin-top: 1.5rem;
+    border-bottom: 1px solid #30363d;
+}
+
 .satellite-entry {
     display: flex;
     align-items: center;
