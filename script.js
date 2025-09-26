@@ -1981,7 +1981,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 				try {
 					const nowISO = new Date().toISOString();
-					const apiUrl = `https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
+					const apiUrl = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
 					
 					const response = await fetch(apiUrl);
 					if (!response.ok) throw new Error(`API de lanzamientos respondió con estado ${response.status}`);
@@ -2234,26 +2234,23 @@ elements.navBtnMenu.addEventListener('click', () => {
 					<div class="pass-card-event skeleton"></div>
 					<div class="pass-card-event skeleton"></div>
 				`;
-				this.fetchLaunches(true).then(allLaunches => {
+				this.fetchLaunches().then(allLaunches => {
 					this.renderLaunches(allLaunches);
 				});
 			},
 
-			async fetchLaunches(forceUpdate = false) {
-				if (!forceUpdate) {
-					try {
-						const cached = JSON.parse(localStorage.getItem(this.cacheKey));
-						if (cached && (Date.now() - cached.timestamp < this.cacheDuration)) {
-							console.log("Lanzamientos cargados desde caché.");
-							return cached.data;
-						}
-					} catch (e) {}
-				}
+			async fetchLaunches() {
+				try {
+					const cached = JSON.parse(localStorage.getItem(this.cacheKey));
+					if (cached && (Date.now() - cached.timestamp < this.cacheDuration)) {
+						console.log("Lanzamientos cargados desde caché.");
+						return cached.data;
+					}
+				} catch (e) {}
 
 				try {
-					const nowISO = new Date().toISOString();
-					const upcomingUrl = `https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
-					const previousUrl = 'https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
+					const upcomingUrl = 'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10';
+					const previousUrl = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
 
 					const [upcomingResponse, previousResponse] = await Promise.all([
 						fetch(upcomingUrl),
@@ -2267,38 +2264,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					const upcomingData = await upcomingResponse.json();
 					const previousData = await previousResponse.json();
 
-					const launchMap = new Map();
-					[...previousData.results, ...upcomingData.results].forEach(launch => {
-						launchMap.set(launch.id, launch);
-					});
-					let allLaunches = Array.from(launchMap.values());
-
-					allLaunches.sort((a, b) => {
-						const now = new Date();
-						const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-						const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-
-						const aDate = new Date(a.net);
-						const bDate = new Date(b.net);
-
-						const getGroup = (date) => {
-							if (date < todayStart) return 0; // Pasado
-							if (date >= todayStart && date < todayEnd) return 1; // Hoy
-							return 2; // Futuro
-						};
-
-						const aGroup = getGroup(aDate);
-						const bGroup = getGroup(bDate);
-
-						if (aGroup !== bGroup) {
-							return aGroup - bGroup;
-						}
-
-						if (aGroup === 0) {
-							return bDate - aDate; // Orden descendente para los pasados (más reciente primero)
-						}
-						return aDate - bDate; // Orden ascendente para hoy y futuros
-					});
+					const allLaunches = [...previousData.results, ...upcomingData.results];
 					
 					localStorage.setItem(this.cacheKey, JSON.stringify({
 						timestamp: Date.now(),
