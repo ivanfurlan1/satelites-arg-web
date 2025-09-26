@@ -1981,7 +1981,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 				try {
 					const nowISO = new Date().toISOString();
-					const apiUrl = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
+					const apiUrl = `https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&limit=1&mode=list&net__gte=${nowISO}`;
 					
 					const response = await fetch(apiUrl);
 					if (!response.ok) throw new Error(`API de lanzamientos respondió con estado ${response.status}`);
@@ -2252,8 +2252,8 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 				try {
 					const nowISO = new Date().toISOString();
-					const upcomingUrl = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
-					const previousUrl = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
+					const upcomingUrl = `https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
+					const previousUrl = 'https://corsproxy.io/?https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
 
 					const [upcomingResponse, previousResponse] = await Promise.all([
 						fetch(upcomingUrl),
