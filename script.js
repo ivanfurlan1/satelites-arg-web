@@ -225,7 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 allFoundPasses: []
             },
             viewConeLayer: null,
-			isManualLocationMode: false
+			isManualLocationMode: false,
+			moonUpdateInterval: null // <--- AÑADÍ ESTA LÍNEA
 		},
 		config: {
 			timeSteps: [ { unit: 'seconds', label: 'SEG', value: 1000 }, { unit: 'minutes', label: 'MIN', value: 60000 }, { unit: 'hours', label: 'HS', value: 3600000 }, ],
@@ -553,11 +554,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			elements.predictPassesBtn.addEventListener('click', () => this.prediction.handlePrediction());
             
             // *** NUEVO: Event Listeners para los botones "Ver más" ***
-            if(elements.viewMoreBtnBestPasses) {
-                elements.viewMoreBtnBestPasses.addEventListener('click', () => this.prediction.calculateNextPassBatch());
+            const viewMoreBtnBestPasses = document.getElementById('view-more-btn-best-passes');
+            if(viewMoreBtnBestPasses) {
+                viewMoreBtnBestPasses.addEventListener('click', () => this.prediction.calculateNextPassBatch());
             }
-            if(elements.viewMoreBtnModal) {
-                elements.viewMoreBtnModal.addEventListener('click', () => this.prediction.calculateNextPassBatch());
+            const viewMoreBtnModal = document.getElementById('view-more-btn-modal');
+            if(viewMoreBtnModal) {
+                viewMoreBtnModal.addEventListener('click', () => this.prediction.calculateNextPassBatch());
             }
 
 			elements.satelliteNameDisplay.addEventListener('click', () => { if (this.state.trackedSatellites.length > 0 && this.state.map) { const sat = this.state.trackedSatellites[0]; if (sat.markers.length > 0) { this.playSound('uiClick', 'F4'); this.state.map.flyTo(sat.markers[0].getLatLng(), this.state.map.getZoom(), { duration: 0.8 }); } } });
@@ -1668,6 +1671,10 @@ elements.navBtnMenu.addEventListener('click', () => {
 				}
 			},
 			renderScreen(screenId, animate = true) {
+				if (App.state.moonUpdateInterval && screenId !== 'info-screen-moon') {
+						clearInterval(App.state.moonUpdateInterval);
+						App.state.moonUpdateInterval = null;
+				}
 				const screens = [ App.elements.startScreen, App.elements.knownSatellitesScreen, App.elements.appContainer, App.elements.mySatellitesScreen, App.elements.bestPassesScreen, App.elements.brightestSatellitesScreen, App.elements.infoScreenAbout, App.elements.infoScreenGuide, App.elements.infoScreenLegal, App.elements.infoScreenSettings, App.elements.latestStarlinksScreen, App.elements.infoScreenMoon, App.elements.menuScreen, App.elements.eventsScreen ];
 				const currentVisibleScreen = screens.find(s => s && !s.classList.contains('hidden'));
 				const targetScreen = document.getElementById(screenId); 
@@ -1698,6 +1705,10 @@ elements.navBtnMenu.addEventListener('click', () => {
 				document.body.classList.toggle('map-active', screenId === 'app-container');
 
 				const cleanupAndShowNext = () => {
+                    if (App.state.moonUpdateInterval) {
+                        clearInterval(App.state.moonUpdateInterval);
+                        App.state.moonUpdateInterval = null;
+                    }
 					if (currentVisibleScreen && currentVisibleScreen.id === 'app-container' && screenId !== 'app-container') {
 						if (App.state.isTimeTraveling) App.time.stopTimeTravel();
 						if (App.state.trackedSatellites.length > 1) {
@@ -1752,7 +1763,10 @@ elements.navBtnMenu.addEventListener('click', () => {
 					else if (screenId === 'brightest-satellites-screen') { App.mySatellites.renderBrightestSatellites(); }
 					else if (screenId === 'latest-starlinks-screen') { App.starlinks.showScreen(); }
 					else if (screenId === 'info-screen-settings') { App.settings.updateUI(); }
-					else if (screenId === 'info-screen-moon') { App.moon.showScreen(); }
+					else if (screenId === 'info-screen-moon') { 
+                        App.moon.showScreen();
+                        App.state.moonUpdateInterval = setInterval(App.moon.updateLiveElements, 5000);
+                    }
 					else if (screenId === 'events-screen') { App.events.populateScreen(); }
 
 					// --- INICIO: Actualizar estado de la barra de navegación inferior ---
@@ -2656,7 +2670,11 @@ elements.navBtnMenu.addEventListener('click', () => {
 			}
 		},
 		mySatellites: {
-			showScreen() { App.navigation.go('my-satellites-screen'); },
+			showScreen() {
+				if (App.state.moonUpdateInterval) {
+						clearInterval(App.state.moonUpdateInterval);
+						App.state.moonUpdateInterval = null;
+				} App.navigation.go('my-satellites-screen'); },
 			renderWithAnimation(container, items, renderFn) {
 				container.innerHTML = '';
 				items.forEach((item, index) => {
@@ -3144,6 +3162,10 @@ elements.navBtnMenu.addEventListener('click', () => {
 		},
 		starlinks: {
 			async showScreen() {
+				if (App.state.moonUpdateInterval) {
+						clearInterval(App.state.moonUpdateInterval);
+						App.state.moonUpdateInterval = null;
+				}
 				const { latestStarlinksContent } = App.elements;
 				latestStarlinksContent.innerHTML = `<div class="text-center p-8"><i class="fa-solid fa-spinner fa-spin text-3xl"></i><p class="mt-4" data-lang-key="calculating">${App.language.getTranslation('calculating')}</p></div>`;
 		
@@ -4666,11 +4688,25 @@ elements.navBtnMenu.addEventListener('click', () => {
                     const cachedData = JSON.parse(localStorage.getItem(cacheKey));
                     if (cachedData && (Date.now() - cachedData.timestamp < cacheDuration)) {
                         console.log("Mejores pasos cargados desde caché.");
-                        App.state.passCalculation.allFoundPasses = cachedData.passes.map(p => ({
+                        const { passCalculation } = App.state;
+
+                        passCalculation.allFoundPasses = cachedData.passes.map(p => ({
                             ...p,
                             start: new Date(p.start),
                             end: new Date(p.end)
                         }));
+
+                        // Restaurar el estado de la paginación para poder continuar la carga
+                        passCalculation.daysCalculated = cachedData.daysCalculated || 0;
+                        passCalculation.inProgress = cachedData.inProgress;
+                        passCalculation.firstPassFound = passCalculation.allFoundPasses.length > 0;
+                        
+                        // Esencial para que "Ver más" sepa qué satélites calcular
+                        passCalculation.satsToCalculate = satsToCalculate;
+                        passCalculation.renderTarget = 'bestPasses';
+                        passCalculation.startDate = new Date();
+                        passCalculation.controller = new AbortController();
+
                         this.renderFilteredPasses();
                         this.updateViewMoreButton();
                         return;
@@ -4956,23 +4992,27 @@ elements.navBtnMenu.addEventListener('click', () => {
                     if (!passCalculation.firstPassFound) {
                         list.innerHTML = `<p class="text-text-secondary text-center p-8 border-2 border-dashed border-gray-700 rounded-lg" data-lang-key="noPassesForFilter">${App.language.getTranslation('noPassesForFilter')}</p>`;
                     }
-                    // *** MODIFICACIÓN INICIA ***
-                    if (passCalculation.renderTarget === 'bestPasses' && passCalculation.allFoundPasses.length > 0) {
-                        const source = App.state.currentBestPassesSource;
-                        const cacheKey = `best_passes_cache_${source}_${App.state.observerCoords[0]}_${App.state.observerCoords[1]}`;
-                        try {
-                            const dataToCache = {
-                                timestamp: Date.now(),
-                                passes: passCalculation.allFoundPasses
-                            };
-                            localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
-                            console.log("Mejores pasos guardados en caché.");
-                        } catch (e) {
-                            console.error("Error al guardar en caché los mejores pasos:", e);
-                        }
-                    }
-                    // *** MODIFICACIÓN TERMINA ***
                 }
+                
+                // *** MODIFICACIÓN INICIA ***
+                // Se guarda en caché después de cada lote, no solo al final.
+                if (passCalculation.renderTarget === 'bestPasses' && passCalculation.allFoundPasses.length > 0) {
+                    const source = App.state.currentBestPassesSource;
+                    const cacheKey = `best_passes_cache_${source}_${App.state.observerCoords[0]}_${App.state.observerCoords[1]}`;
+                    try {
+                        const dataToCache = {
+                            timestamp: Date.now(),
+                            passes: passCalculation.allFoundPasses,
+                            daysCalculated: passCalculation.daysCalculated,
+                            inProgress: passCalculation.inProgress
+                        };
+                        localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+                        console.log("Mejores pasos guardados en caché.");
+                    } catch (e) {
+                        console.error("Error al guardar en caché los mejores pasos:", e);
+                    }
+                }
+                // *** MODIFICACIÓN TERMINA ***
             },
             
             stopPassCalculation() {
@@ -6441,6 +6481,10 @@ elements.navBtnMenu.addEventListener('click', () => {
 		},
 		moon: {
 			showScreen() {
+				if (App.state.moonUpdateInterval) {
+						clearInterval(App.state.moonUpdateInterval);
+						App.state.moonUpdateInterval = null;
+				}
 				const container = App.elements.moonPhaseContainer;
 				if (!container) return;
 		
@@ -6476,11 +6520,14 @@ elements.navBtnMenu.addEventListener('click', () => {
 				}
 		
 				container.appendChild(fragment);
+		
+				// Inicia el intervalo para actualizar la tarjeta de "Hoy" cada 5 segundos
+				App.state.moonUpdateInterval = setInterval(this.updateLiveElements, 5000);
 			},
 		
 			createDayCard(date, isToday) {
 				const [lat, lon] = App.state.observerCoords;
-				const moonInfo = SunCalc.getMoonIllumination(date);
+				const moonInfo = isToday ? SunCalc.getMoonIllumination(new Date()) : SunCalc.getMoonIllumination(date);
 				const moonTimes = SunCalc.getMoonTimes(date, lat, lon);
 				const phase = moonInfo.phase;
 		
@@ -6521,7 +6568,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 						<div class="moon-phase-name">${phaseName}</div>
 					</div>
 					<div class="moon-day-details">
-						<div class="moon-illumination">${illumination}</div>
+						<div class="moon-illumination" ${isToday ? 'id="live-moon-illumination"' : ''}>${illumination}</div>
 						<div class="moon-times mt-1">
 							<div class="flex items-center justify-end">
 								<i class="fa-solid fa-arrow-up w-4 text-center mr-1"></i>
@@ -6555,7 +6602,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					const moonInfo = SunCalc.getMoonIllumination(new Date());
 					liveIlluminationEl.textContent = (moonInfo.fraction * 100).toFixed(0) + '%';
 				}
-			}
+			},
 		},
 		language: {
 			loadedTranslations: {},
