@@ -91,7 +91,7 @@ body {
         /* Luz sutil azulada desde la esquina superior izquierda (MODIFICADO) */
         radial-gradient(ellipse farthest-corner at 0% 40%, rgba(88, 166, 255, 0.04) 0%, transparent 70%),
         /* Luz sutil blanquecina desde la esquina inferior derecha (MODIFICADO) */
-        radial-gradient(ellipse farthest-corner at 100% 100%, rgba(42, 22, 223, 0.018) 0%, transparent 60%),
+        radial-gradient(ellipse farthest-corner at 100% 100%, rgba(42, 22, 223, 0.038) 0%, transparent 60%),
         /* Color de fondo base */
         var(--color-background);
 }
@@ -3208,6 +3208,21 @@ body.map-active {
         width: 100%;
         left: 0;
     }
+    
+.no-location-prompt-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    margin: 1rem;
+    border: 2px dashed #30363d;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
     /* Ajusta el diseño de cada botón de navegación para la barra ancha */
     .nav-item {

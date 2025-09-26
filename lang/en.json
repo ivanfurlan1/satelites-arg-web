@@ -177,6 +177,7 @@
   "noSatsLoaded": "No satellites have been loaded.",
   "favoriteButton": { "title": "Mark as Favorite" },
   "setLocationForBestPasses": "Set a location to calculate the best passes.",
+  "setLocationForMoon": "To view Moon data, we need your location:",
   "noFavoritesForBestPasses": "You have no satellites saved in favorites.",
   "calculatingBestPasses": "Calculating best passes for {count} satellite(s)...",
   "observerLocation": "Observer's location",
