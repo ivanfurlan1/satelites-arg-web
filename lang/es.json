@@ -228,5 +228,9 @@
   "navHome": "Inicio",
   "navMoon": "Luna",
   "navMenu": "Menú",
-  "dayNightToggle": "Día y Noche"
+  "dayNightToggle": "Día y Noche",
+  "launchesTitle": "Lanzamientos Starlink",
+  "noUpcomingLaunches": "No se encontraron próximos lanzamientos.",
+  "launchStatusSuccess": "Lanzado",
+  "launchStatusGo": "Confirmado"
 }

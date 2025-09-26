@@ -2234,22 +2234,25 @@ elements.navBtnMenu.addEventListener('click', () => {
 					<div class="pass-card-event skeleton"></div>
 					<div class="pass-card-event skeleton"></div>
 				`;
-				this.fetchLaunches().then(allLaunches => {
+				this.fetchLaunches(true).then(allLaunches => {
 					this.renderLaunches(allLaunches);
 				});
 			},
 
-			async fetchLaunches() {
-				try {
-					const cached = JSON.parse(localStorage.getItem(this.cacheKey));
-					if (cached && (Date.now() - cached.timestamp < this.cacheDuration)) {
-						console.log("Lanzamientos cargados desde caché.");
-						return cached.data;
-					}
-				} catch (e) {}
+			async fetchLaunches(forceUpdate = false) {
+				if (!forceUpdate) {
+					try {
+						const cached = JSON.parse(localStorage.getItem(this.cacheKey));
+						if (cached && (Date.now() - cached.timestamp < this.cacheDuration)) {
+							console.log("Lanzamientos cargados desde caché.");
+							return cached.data;
+						}
+					} catch (e) {}
+				}
 
 				try {
-					const upcomingUrl = 'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10';
+					const nowISO = new Date().toISOString();
+					const upcomingUrl = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
 					const previousUrl = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
 
 					const [upcomingResponse, previousResponse] = await Promise.all([
@@ -2264,7 +2267,38 @@ elements.navBtnMenu.addEventListener('click', () => {
 					const upcomingData = await upcomingResponse.json();
 					const previousData = await previousResponse.json();
 
-					const allLaunches = [...previousData.results, ...upcomingData.results];
+					const launchMap = new Map();
+					[...previousData.results, ...upcomingData.results].forEach(launch => {
+						launchMap.set(launch.id, launch);
+					});
+					let allLaunches = Array.from(launchMap.values());
+
+					allLaunches.sort((a, b) => {
+						const now = new Date();
+						const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+						const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+
+						const aDate = new Date(a.net);
+						const bDate = new Date(b.net);
+
+						const getGroup = (date) => {
+							if (date < todayStart) return 0; // Pasado
+							if (date >= todayStart && date < todayEnd) return 1; // Hoy
+							return 2; // Futuro
+						};
+
+						const aGroup = getGroup(aDate);
+						const bGroup = getGroup(bDate);
+
+						if (aGroup !== bGroup) {
+							return aGroup - bGroup;
+						}
+
+						if (aGroup === 0) {
+							return bDate - aDate; // Orden descendente para los pasados (más reciente primero)
+						}
+						return aDate - bDate; // Orden ascendente para hoy y futuros
+					});
 					
 					localStorage.setItem(this.cacheKey, JSON.stringify({
 						timestamp: Date.now(),
@@ -2324,17 +2358,20 @@ elements.navBtnMenu.addEventListener('click', () => {
 				}
 
 				card.innerHTML = `
-					<div class="launch-card-icon">
-						<i class="fa-solid fa-rocket"></i>
-					</div>
-					<div>
-						<p class="launch-card-name">${launch.name}</p>
-						<p class="launch-card-date">${formattedDate} hs</p>
-					</div>
-					<div class="text-right">
-						<span class="status-tag ${statusClass}">${statusText}</span>
-					</div>
-				`;
+                    <div class="launch-card-top">
+                        <div class="launch-card-icon">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <div>
+                            <p class="launch-card-name">${launch.name}</p>
+                            <p class="launch-card-date">${formattedDate} hs</p>
+                        </div>
+                    </div>
+                    <div class="launch-card-bottom">
+                        <div class="launch-card-divider"></div>
+                        <span class="status-tag ${statusClass}">${statusText}</span>
+                    </div>
+                `;
 				return card;
 			}
 		},
