@@ -150,16 +150,32 @@
 
                     <div class="event-section flex flex-col">
                         <h3 class="event-section-title">Lanzamientos</h3>
-                        <div class="launch-card-event">
+                        <button id="open-launches-screen-btn" class="launch-card-event text-left w-full">
                             <i class="fa-solid fa-rocket launch-icon-event"></i>
                             <div class="launch-info-event">
                                 <p id="launch-mission-name" class="font-bold text-lg">Buscando...</p>
                                 <p id="launch-status-text" class="text-sm text-text-secondary">Próximo lanzamiento</p>
                                 <p id="launch-date-text" class="text-xs text-secondary mt-2"><i class="fa-solid fa-calendar-alt mr-2"></i>--</p>
                             </div>
-                        </div>
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="launches-screen" class="screen hidden !p-0 !justify-start">
+        <div class="w-full max-w-3xl flex flex-col h-full">
+            <header class="satellites-header">
+                <div class="relative flex items-center justify-center">
+                    <button id="back-to-events-from-launches-btn" class="absolute left-0 h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-surface hover:text-text-primary transition-colors duration-200" data-lang-key="backButton" aria-label="Volver" title="Volver">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-xl font-bold" data-lang-key="launchesTitle">Lanzamientos Starlink</h2>
+                </div>
+            </header>
+            <div id="launches-list-container" class="flex-grow min-h-0 overflow-y-auto px-4 sm:px-6 space-y-3 py-4">
+                
             </div>
         </div>
     </div>

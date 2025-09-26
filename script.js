@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.time.startRealTimeUpdates(); // Inicia el reloj global
 		},
 		cacheDOMElements() {
-			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off', 'show-previous-passes-btn-new', 'slider-prev-btn', 'slider-next-btn' ];
+			const ids = [ 'start-screen', 'known-satellites-screen', 'app-container', 'open-known-satellites-btn', 'open-map-btn', 'back-to-start-btn', 'back-btn-from-map', 'tle-modal', 'close-tle-modal-btn', 'save-tle-btn', 'tle-input', 'tle-status', 'location-input', 'location-feedback', 'predict-passes-btn', 'passes-modal', 'passes-modal-title', 'close-passes-modal-btn', 'results-container', 'main-control-panel', 'collapsed-header', 'expanded-content', 'toggle-menu-btn', 'utc-time-display', 'time-control-panel', 'toggle-time-control-btn', 'reset-time-btn', 'time-rewind-btn', 'time-step-btn', 'time-forward-btn', 'timeline-slider', 'date-input', 'time-input', 'date-input-display', 'time-input-display', 'current-time-display', 'my-satellites-screen', 'open-my-satellites-btn', 'my-satellites-list', 'no-my-satellites-msg', 'add-my-satellite-btn', 'back-to-known-btn', 'known-satellites-list', 'confirm-modal', 'confirm-modal-text', 'confirm-delete-btn', 'cancel-delete-btn', 'open-favorites-modal-btn', 'favorites-modal', 'close-favorites-modal-btn', 'favorites-modal-list', 'map-style-switcher', 'map-style-toggle-btn', 'map-style-options', 'action-controls', 'visibility-controls', 'toggle-visibility-bands-btn', 'visibility-legend', 'satellite-info-header', 'satellite-name-display', 'satellite-info-modal', 'satellite-info-modal-title', 'satellite-info-content', 'close-satellite-info-modal-btn', 'open-best-passes-btn', 'best-passes-screen', 'best-passes-list', 'back-to-start-from-best-passes-btn', 'best-passes-location-input', 'best-passes-location-feedback', 'best-passes-filter', 'open-latest-starlinks-btn', 'add-tle-from-main-btn', 'back-to-start-from-known-btn', 'back-to-start-from-passes-btn', 'location-search-btn', 'location-search-icon', 'best-passes-location-search-btn', 'best-passes-location-search-icon', 'back-to-known-from-my-satellites-btn', 'open-compass-menu-btn', 'panel-pages-wrapper', 'best-passes-scroller', 'prediction-date-display', 'radar-canvas', 'radar-pointer', 'expand-radar-btn', 'radar-modal', 'close-radar-modal-btn', 'large-radar-canvas', 'large-radar-pointer', 'calibrate-compass-btn', 'time-control-handle', 'info-screen-about', 'info-screen-guide', 'info-screen-legal', 'back-to-start-from-about-btn', 'back-to-start-from-guide-btn', 'back-to-start-from-legal-btn', 'open-social-btn', 'social-modal', 'close-social-modal-btn', 'close-time-control-btn', 'page-indicator-dots', 'toggle-multi-select-btn', 'multi-select-counter', 'show-selected-sats-btn', 'favorites-modal-footer', 'passes-modal-filter', 'show-all-satellites-btn', 'info-screen-settings', 'back-to-start-from-settings-btn', 'open-settings-btn', 'setting-map-dark', 'setting-map-satellite', 'language-dropdown-toggle', 'current-language-display', 'language-dropdown-menu', 'notification-modal', 'close-notification-modal-btn', 'notification-options', 'done-notification-modal-btn', 'open-brightest-satellites-btn', 'brightest-satellites-screen', 'brightest-satellites-list', 'back-to-known-from-brightest-btn', 'best-passes-filter-container', 'passes-modal-filter-container', 'best-passes-source-filter-container', 'known-satellites-search-input', 'brightest-satellites-search-input', 'search-container-known', 'search-toggle-btn-known', 'favorite-satellites-list-known-screen', 'favorite-satellites-search-input', 'search-container-favorites', 'search-toggle-btn-favorites', 'no-favorites-on-known-screen-msg', 'view-more-container-best-passes', 'view-more-btn-best-passes', 'view-more-container-modal', 'view-more-btn-modal', 'loading-modal', 'loading-modal-text', 'latest-starlinks-screen', 'back-to-known-from-starlinks-btn', 'latest-starlinks-content', 'daily-update-pill', 'daily-update-icon', 'daily-update-text-pill', 'daily-update-title', 'daily-update-modal', 'daily-update-modal-content', 'close-daily-update-modal-btn', 'radar-moon-icon', 'large-radar-moon-icon', 'daily-update-main-pill', 'nearby-button', 'info-screen-moon', 'back-to-start-from-moon-btn', 'moon-phase-container', 'bottom-nav-bar', 'menu-screen', 'back-to-start-from-menu-btn', 'menu-btn-about', 'menu-btn-guide', 'menu-btn-contact', 'menu-btn-settings', 'events-screen', 'back-to-start-from-events-btn', 'nav-btn-home', 'nav-btn-events', 'nav-btn-moon', 'nav-btn-menu', 'toggle-night-overlay-btn', 'setting-day-night-on', 'setting-day-night-off', 'show-previous-passes-btn-new', 'slider-prev-btn', 'slider-next-btn', 'launches-screen', 'back-to-events-from-launches-btn', 'launches-list-container', 'open-launches-screen-btn' ];
 			ids.forEach(id => { const camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase()); this.elements[camelCaseId] = document.getElementById(id); });
 			if (this.elements.pageIndicatorDots) {
 				this.elements.pageIndicatorDots.dots = this.elements.pageIndicatorDots.querySelectorAll('.dot');
@@ -1066,6 +1066,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             elements.backToStartFromEventsBtn.addEventListener('click', () => { this.playSound('uiClick', 'A3'); history.back(); });
 
+			elements.openLaunchesScreenBtn.addEventListener('click', () => {
+                this.playSound('uiClick', 'D#4');
+                this.navigation.go('launches-screen');
+            });
+            elements.backToEventsFromLaunchesBtn.addEventListener('click', () => { this.playSound('uiClick', 'A3'); history.back(); });
+
 			// --- INICIO: Lógica para la barra de navegación inferior ---
 			elements.navBtnHome.addEventListener('click', () => {
                 this.playSound('uiClick', 'C4');
@@ -1428,7 +1434,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 						const elevation = satellite.radiansToDegrees(lookAngles.elevation);
 
 						if (elevation > 10) {
-							const isObserverDark = App.prediction._isObserverInDarkness(now, observerCoords);
+							const isObserverDark = App.prediction._isObserverInDarkness(now, observerCoords, sat.satrec);
 							const isSatInSunlight = App.prediction.isSatIlluminated(posVel.position, now);
 							isVisible = isObserverDark && isSatInSunlight;
 						}
@@ -1675,7 +1681,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 						clearInterval(App.state.moonUpdateInterval);
 						App.state.moonUpdateInterval = null;
 				}
-				const screens = [ App.elements.startScreen, App.elements.knownSatellitesScreen, App.elements.appContainer, App.elements.mySatellitesScreen, App.elements.bestPassesScreen, App.elements.brightestSatellitesScreen, App.elements.infoScreenAbout, App.elements.infoScreenGuide, App.elements.infoScreenLegal, App.elements.infoScreenSettings, App.elements.latestStarlinksScreen, App.elements.infoScreenMoon, App.elements.menuScreen, App.elements.eventsScreen ];
+				const screens = [ App.elements.startScreen, App.elements.knownSatellitesScreen, App.elements.appContainer, App.elements.mySatellitesScreen, App.elements.bestPassesScreen, App.elements.brightestSatellitesScreen, App.elements.infoScreenAbout, App.elements.infoScreenGuide, App.elements.infoScreenLegal, App.elements.infoScreenSettings, App.elements.latestStarlinksScreen, App.elements.infoScreenMoon, App.elements.menuScreen, App.elements.eventsScreen, App.elements.launchesScreen ];
 				const currentVisibleScreen = screens.find(s => s && !s.classList.contains('hidden'));
 				const targetScreen = document.getElementById(screenId); 
 				if (!targetScreen) return;
@@ -1768,6 +1774,7 @@ elements.navBtnMenu.addEventListener('click', () => {
                         App.state.moonUpdateInterval = setInterval(App.moon.updateLiveElements, 5000);
                     }
 					else if (screenId === 'events-screen') { App.events.populateScreen(); }
+					else if (screenId === 'launches-screen') { App.launches.showScreen(); }
 
 					// --- INICIO: Actualizar estado de la barra de navegación inferior ---
 					const navItems = App.elements.bottomNavBar.querySelectorAll('.nav-item');
@@ -1780,6 +1787,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					} else if (screenId === 'events-screen') {
                         App.elements.navBtnEvents.classList.add('active');
                     } else if (screenId === 'info-screen-moon') {
+					
 						App.elements.navBtnMoon.classList.add('active');
 					} else if (menuScreens.includes(screenId)) {
 						App.elements.navBtnMenu.classList.add('active');
@@ -2212,6 +2220,121 @@ elements.navBtnMenu.addEventListener('click', () => {
 					App.satellites.handleTleLoad(true);
 					App.navigation.go('app-container');
 				});
+				return card;
+			}
+		},
+		launches: {
+			cacheKey: 'satelitesarg_launches_cache',
+			cacheDuration: 2 * 60 * 60 * 1000, // 2 horas
+
+			showScreen() {
+				const container = App.elements.launchesListContainer;
+				container.innerHTML = `
+					<div class="pass-card-event skeleton mt-4"></div>
+					<div class="pass-card-event skeleton"></div>
+					<div class="pass-card-event skeleton"></div>
+				`;
+				this.fetchLaunches().then(allLaunches => {
+					this.renderLaunches(allLaunches);
+				});
+			},
+
+			async fetchLaunches() {
+				try {
+					const cached = JSON.parse(localStorage.getItem(this.cacheKey));
+					if (cached && (Date.now() - cached.timestamp < this.cacheDuration)) {
+						console.log("Lanzamientos cargados desde caché.");
+						return cached.data;
+					}
+				} catch (e) {}
+
+				try {
+					const upcomingUrl = 'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10';
+					const previousUrl = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
+
+					const [upcomingResponse, previousResponse] = await Promise.all([
+						fetch(upcomingUrl),
+						fetch(previousUrl)
+					]);
+
+					if (!upcomingResponse.ok || !previousResponse.ok) {
+						throw new Error('Error en la API de lanzamientos');
+					}
+
+					const upcomingData = await upcomingResponse.json();
+					const previousData = await previousResponse.json();
+
+					const allLaunches = [...previousData.results, ...upcomingData.results];
+					
+					localStorage.setItem(this.cacheKey, JSON.stringify({
+						timestamp: Date.now(),
+						data: allLaunches
+					}));
+
+					return allLaunches;
+
+				} catch (error) {
+					console.error("Error al obtener datos de lanzamientos:", error);
+					return [];
+				}
+			},
+
+			renderLaunches(launches) {
+				const container = App.elements.launchesListContainer;
+				if (!launches || launches.length === 0) {
+					container.innerHTML = `<p class="text-text-secondary text-center p-8" data-lang-key="noUpcomingLaunches">${App.language.getTranslation('noUpcomingLaunches')}</p>`;
+					return;
+				}
+
+				container.innerHTML = '';
+				const fragment = document.createDocumentFragment();
+				
+				launches.forEach(launch => {
+					const card = this._createLaunchCard(launch);
+					fragment.appendChild(card);
+				});
+
+				container.appendChild(fragment);
+				App.language.set(App.settings.current.language);
+			},
+
+			_createLaunchCard(launch) {
+				const card = document.createElement('div');
+				const launchDate = new Date(launch.net);
+				const now = new Date();
+				const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+				const launchDay = new Date(launchDate.getFullYear(), launchDate.getMonth(), launchDate.getDate());
+
+				let cardClass = 'launch-card';
+				if (launchDay < today) {
+					cardClass += ' is-past';
+				} else if (launchDay.getTime() === today.getTime()) {
+					cardClass += ' is-today';
+				}
+				card.className = cardClass;
+
+				const timeOptions = { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' };
+				const formattedDate = App.time.formatCityTime(launchDate, timeOptions);
+
+				let statusText = launch.status.name;
+				let statusClass = '';
+				if(launch.status.abbrev.toLowerCase() === 'success' || launch.status.abbrev.toLowerCase() === 'go') {
+					statusText = App.language.getTranslation(launch.status.abbrev.toLowerCase() === 'success' ? 'launchStatusSuccess' : 'launchStatusGo');
+					statusClass = launch.status.abbrev.toLowerCase() === 'success' ? 'is-success' : 'is-go';
+				}
+
+				card.innerHTML = `
+					<div class="launch-card-icon">
+						<i class="fa-solid fa-rocket"></i>
+					</div>
+					<div>
+						<p class="launch-card-name">${launch.name}</p>
+						<p class="launch-card-date">${formattedDate} hs</p>
+					</div>
+					<div class="text-right">
+						<span class="status-tag ${statusClass}">${statusText}</span>
+					</div>
+				`;
 				return card;
 			}
 		},
@@ -3691,7 +3814,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 
 						let isVisible = true;
 						if (observerCoords && (isSpecialOrbitModeActive || isPassViewActive)) {
-							const isObserverDark = App.prediction._isObserverInDarkness(new Date(currentTime), observerCoords);
+							const isObserverDark = App.prediction._isObserverInDarkness(new Date(currentTime), observerCoords, sat.satrec);
 							const isSatInSunlight = App.prediction.isSatIlluminated(posVel.position, new Date(currentTime));
 							const observerGd = { latitude: satellite.degreesToRadians(observerCoords[0]), longitude: satellite.degreesToRadians(observerCoords[1]), height: 0.1 };
 							const posEcf = satellite.eciToEcf(posVel.position, gmst);
@@ -3849,7 +3972,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 							let isVisibleFromCity = false;
 							if (isSpecialOrbitModeActive && observerCoords) {
 								const isSatInSunlight = App.prediction.isSatIlluminated(pnv.position, time);
-								const isObserverDark = App.prediction._isObserverInDarkness(time, observerCoords);
+								const isObserverDark = App.prediction._isObserverInDarkness(time, observerCoords, sat.satrec);
 								const observerGd = { latitude: satellite.degreesToRadians(observerCoords[0]), longitude: satellite.degreesToRadians(observerCoords[1]), height: 0.1 };
 								const posEcf = satellite.eciToEcf(pnv.position, gmst);
 								const lookAngles = satellite.ecfToLookAngles(observerGd, posEcf);
@@ -4396,9 +4519,17 @@ elements.navBtnMenu.addEventListener('click', () => {
 			}
 		},
 		prediction: {
-			_isObserverInDarkness(time, coords) {
+			_isObserverInDarkness(time, coords, satrec = null) {
 				const sunTimes = SunCalc.getTimes(time, coords[0], coords[1]);
-				const gracePeriod = App.config.predictionGracePeriodMinutes * 60000; 
+				
+				let gracePeriodMinutes = App.config.predictionGracePeriodMinutes;
+				if (satrec) {
+					const noradId = parseInt(satrec.satnum, 10);
+					if (noradId === 25544 || noradId === 48274) { // ISS or Tiangong
+						gracePeriodMinutes = 30;
+					}
+				}
+				const gracePeriod = gracePeriodMinutes * 60000; 
 
 				const eveningLimit = new Date(sunTimes.sunset.getTime() + gracePeriod);
 				const morningLimit = new Date(sunTimes.sunrise.getTime() - gracePeriod);
@@ -4460,7 +4591,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 						}
 
 						if (inPass) {
-							const isObserverInDarkness = this._isObserverInDarkness(time, coords);
+							const isObserverInDarkness = this._isObserverInDarkness(time, coords, sat.satrec);
 							const isSatInSunlight = this.isSatIlluminated(posVel.position, time);
 							const isVisibleNow = isObserverInDarkness && isSatInSunlight;
 							
@@ -5168,7 +5299,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 						if (elevation < 0) continue;
 						
 						const posGd = satellite.eciToGeodetic(posVel.position, gmst);
-						const isObserverDark = this._isObserverInDarkness(time, coords);
+						const isObserverDark = this._isObserverInDarkness(time, coords, sat.satrec);
 						const lat = satellite.radiansToDegrees(posGd.latitude);
 						let lon = satellite.radiansToDegrees(posGd.longitude);
 

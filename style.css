@@ -1349,9 +1349,10 @@ body.map-active #action-controls {
 #my-satellites-screen .overflow-y-auto,
 #latest-starlinks-screen .overflow-y-auto,
 #brightest-satellites-screen .overflow-y-auto,
-#events-screen .overflow-y-auto {
+#events-screen .overflow-y-auto,
+#launches-screen .overflow-y-auto {
     padding-top: 1rem;
-    padding-bottom: calc(60px + 1rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(60px + 1.5rem + env(safe-area-inset-bottom));
 }
 
 #map-style-switcher,
@@ -3231,4 +3232,65 @@ body.map-active {
     .nav-item span {
         font-size: 1rem;
     }
+}
+
+/* ========================================================================== 
+   ESTILOS PARA LA PANTALLA DE LANZAMIENTOS
+   ========================================================================== */
+.launch-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    border-left-width: 3px;
+    border-left-color: #30363d;
+    transition: all 0.2s var(--ease-out-quint);
+}
+.launch-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-secondary);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+.launch-card.is-past {
+    border-left-color: var(--color-success) !important;
+    background-image: linear-gradient(to right, rgba(57, 211, 83, 0.1), transparent);
+}
+.launch-card.is-today {
+    border-left-color: var(--color-secondary) !important;
+    background-image: linear-gradient(to right, rgba(88, 166, 255, 0.1), transparent);
+}
+.launch-card-icon {
+    font-size: 1.75rem;
+    color: var(--color-text-secondary);
+    width: 30px;
+    text-align: center;
+}
+.launch-card-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.launch-card-date {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+.status-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.status-tag.is-go {
+    background-color: rgba(57, 211, 83, 0.15);
+    color: var(--color-success);
+}
+.status-tag.is-success {
+    background-color: rgba(88, 166, 255, 0.15);
+    color: var(--color-secondary);
 }
