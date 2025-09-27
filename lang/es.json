@@ -232,5 +232,9 @@
   "launchesTitle": "Lanzamientos Starlink",
   "noUpcomingLaunches": "No se encontraron próximos lanzamientos.",
   "launchStatusSuccess": "Lanzado",
-  "launchStatusGo": "Confirmado"
+  "launchStatusGo": "Confirmado",
+  "launchesLaunched": "Lanzados",
+  "launchesUpcoming": "Próximos",
+  "viewPreviousLaunches": "Ver lanzamientos previos",
+  "launchesToday": "Hoy"
 }

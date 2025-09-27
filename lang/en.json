@@ -231,5 +231,9 @@
   "launchesTitle": "Starlink Launches",
   "noUpcomingLaunches": "No upcoming launches were found.",
   "launchStatusSuccess": "Launched",
-  "launchStatusGo": "Go for Launch"
+  "launchStatusGo": "Go for Launch",
+  "launchesLaunched": "Launched",
+  "launchesUpcoming": "Upcoming",
+  "viewPreviousLaunches": "View previous launches",
+  "launchesToday": "Today"
 }

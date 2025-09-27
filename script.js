@@ -2226,7 +2226,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 		},
 		launches: {
 			cacheKey: 'satelitesarg_launches_cache',
-			cacheDuration: 2 * 60 * 60 * 1000, // 2 horas
+			cacheDuration: 15 * 60 * 1000, // 15 minutos
 
 			showScreen() {
 				const container = App.elements.launchesListContainer;
@@ -2235,7 +2235,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					<div class="pass-card-event skeleton"></div>
 					<div class="pass-card-event skeleton"></div>
 				`;
-				this.fetchLaunches(true).then(allLaunches => {
+				this.fetchLaunches().then(allLaunches => {
 					this.renderLaunches(allLaunches);
 				});
 			},
@@ -2256,7 +2256,7 @@ elements.navBtnMenu.addEventListener('click', () => {
 					const upcomingTarget = `https://ll.thespacedevs.com/2.2.0/launch/upcoming/?search=Starlink&mode=list&limit=10&net__gte=${nowISO}`;
 					const upcomingUrl = `https://api.codetabs.com/v1/proxy/?quest=${upcomingTarget}`;
 					
-					const previousTarget = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=2';
+					const previousTarget = 'https://ll.thespacedevs.com/2.2.0/launch/previous/?search=Starlink&mode=list&limit=10';
 					const previousUrl = `https://api.codetabs.com/v1/proxy/?quest=${previousTarget}`;
 
 					const [upcomingResponse, previousResponse] = await Promise.all([
@@ -2327,33 +2327,109 @@ elements.navBtnMenu.addEventListener('click', () => {
 				container.innerHTML = '';
 				const fragment = document.createDocumentFragment();
 				const now = new Date();
+				const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+				const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
-				// Encontrar el índice del primer lanzamiento futuro
-				const firstUpcomingIndex = launches.findIndex(l => new Date(l.net) >= now);
+				const pastLaunches = [];
+				const todayLaunches = [];
+				const upcomingLaunches = [];
 
-				const pastLaunches = firstUpcomingIndex === -1 ? launches : launches.slice(0, firstUpcomingIndex);
-				const upcomingLaunches = firstUpcomingIndex === -1 ? [] : launches.slice(firstUpcomingIndex);
-				
-				const createSection = (titleKey, launchList, isFirstSection) => {
-					if (launchList.length > 0) {
-						const header = document.createElement('h3');
-						header.className = 'launch-section-header';
-						if (isFirstSection) {
-							header.style.marginTop = '0';
-						}
-						header.setAttribute('data-lang-key', titleKey);
-						header.textContent = App.language.getTranslation(titleKey);
-						fragment.appendChild(header);
-
-						launchList.forEach(launch => {
-							const card = this._createLaunchCard(launch);
-							fragment.appendChild(card);
-						});
+				launches.forEach(launch => {
+					const launchDate = new Date(launch.net);
+					if (launchDate < todayStart) {
+						pastLaunches.push(launch);
+					} else if (launchDate >= todayStart && launchDate < todayEnd) {
+						todayLaunches.push(launch);
+					} else {
+						upcomingLaunches.push(launch);
 					}
-				};
+				});
+
+				pastLaunches.sort((a, b) => new Date(b.net) - new Date(a.net));
+				todayLaunches.sort((a, b) => new Date(a.net) - new Date(b.net));
+				upcomingLaunches.sort((a, b) => new Date(a.net) - new Date(b.net));
 				
-				createSection('launchesLaunched', pastLaunches, true);
-				createSection('launchesUpcoming', upcomingLaunches, pastLaunches.length === 0);
+				let isFirstSection = true;
+
+				const initialPastLaunches = pastLaunches.slice(0, 2);
+				const remainingPastLaunches = pastLaunches.length > 2 ? pastLaunches.slice(2) : [];
+
+				if (initialPastLaunches.length > 0) {
+					isFirstSection = false;
+
+					const launchedItemsContainer = document.createElement('div');
+					launchedItemsContainer.className = 'space-y-3';
+
+					if (remainingPastLaunches.length > 0) {
+						const viewMoreContainer = document.createElement('div');
+						viewMoreContainer.className = 'text-center py-2';
+						const viewMoreBtn = document.createElement('button');
+						viewMoreBtn.className = 'view-more-link';
+						viewMoreBtn.textContent = App.language.getTranslation('viewPreviousLaunches');
+						
+						viewMoreBtn.addEventListener('click', () => {
+							const hiddenFragment = document.createDocumentFragment();
+							remainingPastLaunches.forEach(launch => {
+								const card = this._createLaunchCard(launch);
+								hiddenFragment.appendChild(card);
+							});
+							launchedItemsContainer.append(hiddenFragment);
+							viewMoreContainer.remove();
+						}, { once: true });
+
+						viewMoreContainer.appendChild(viewMoreBtn);
+						fragment.appendChild(viewMoreContainer);
+					}
+                    
+                    initialPastLaunches.forEach(launch => {
+                        const card = this._createLaunchCard(launch);
+					    launchedItemsContainer.appendChild(card);
+                    });
+					fragment.appendChild(launchedItemsContainer);
+				}
+
+				if (todayLaunches.length > 0) {
+					const todayHeader = document.createElement('h3');
+					todayHeader.className = 'launch-section-header';
+					if (isFirstSection) {
+						todayHeader.style.marginTop = '0';
+					} else {
+						todayHeader.style.marginTop = '2.5rem';
+					}
+					todayHeader.setAttribute('data-lang-key', 'launchesToday');
+					todayHeader.textContent = App.language.getTranslation('launchesToday');
+					fragment.appendChild(todayHeader);
+					isFirstSection = false;
+
+					const todayItemsContainer = document.createElement('div');
+					todayItemsContainer.className = 'space-y-3';
+					todayLaunches.forEach(launch => {
+						const card = this._createLaunchCard(launch);
+						todayItemsContainer.appendChild(card);
+					});
+					fragment.appendChild(todayItemsContainer);
+				}
+				
+				if (upcomingLaunches.length > 0) {
+					const upcomingHeader = document.createElement('h3');
+					upcomingHeader.className = 'launch-section-header';
+                    if (isFirstSection) {
+						upcomingHeader.style.marginTop = '0';
+					} else {
+						upcomingHeader.style.marginTop = '2.5rem';
+					}
+					upcomingHeader.setAttribute('data-lang-key', 'launchesUpcoming');
+					upcomingHeader.textContent = App.language.getTranslation('launchesUpcoming');
+					fragment.appendChild(upcomingHeader);
+
+					const upcomingItemsContainer = document.createElement('div');
+					upcomingItemsContainer.className = 'space-y-3';
+					upcomingLaunches.forEach(launch => {
+						const card = this._createLaunchCard(launch);
+						upcomingItemsContainer.appendChild(card);
+					});
+					fragment.appendChild(upcomingItemsContainer);
+				}
 
 				container.appendChild(fragment);
 				App.language.set(App.settings.current.language);
